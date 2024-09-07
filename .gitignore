@@ -1,0 +1,5 @@
+# Ignore Python Virtual Environment
+local/news-fetch
+
+# Ignore Environment Variables
+.env
