@@ -3,3 +3,6 @@ local/news-fetch
 
 # Ignore Environment Variables
 .env
+
+local/lambda/venv
+local/lambda/package

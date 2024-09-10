@@ -18,7 +18,7 @@ SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 # Rest of your code remains the same
 
 def fetch_news():
-    url = f'https://newsapi.org/v2/top-headlines?country=us&apiKey={NEWS_API_KEY}'
+    url = f'https://newsapi.org/v2/top-headlines?country=us&apiKey={NEWS_API_KEY}&pageSize=2'
     response = requests.get(url)
     articles = response.json().get('articles', [])
     return articles
@@ -27,7 +27,7 @@ def push_to_sqs(articles):
     sqs = boto3.client('sqs', 
                        aws_access_key_id=AWS_ACCESS_KEY,
                        aws_secret_access_key=AWS_SECRET_KEY,
-                       region_name='your_aws_region')
+                       region_name=AWS_REGION)
     for article in articles:
         sqs.send_message(
             QueueUrl=SQS_QUEUE_URL,
@@ -39,7 +39,7 @@ def job():
     articles = fetch_news()
     push_to_sqs(articles)
 
-schedule.every(1).hour.do(job)
+schedule.every(30).seconds.do(job)
 
 if __name__ == "__main__":
     while True:
