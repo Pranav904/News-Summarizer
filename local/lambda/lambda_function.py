@@ -24,7 +24,7 @@ def lambda_handler(event, context):
         article = json.loads(record['body'])
         
         # Call Google AI Studio for summarization
-        summary = summarize_article(article['content'])
+        summary = summarize_article(article['url'])
         
         # Here you would typically save to a database
         # For now, we'll just print the summary
@@ -36,8 +36,7 @@ def lambda_handler(event, context):
 def summarize_article(content):
     prompt = [
         "Summarize the given news article in under 90 words.",
-        f"input: {content}",
-        "summary: ",
+        content
     ]
     response = model.generate_content(prompt)
     return response.text

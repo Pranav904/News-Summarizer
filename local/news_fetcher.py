@@ -17,8 +17,10 @@ SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 
 # Rest of your code remains the same
 
+pageSize = 2
+
 def fetch_news():
-    url = f'https://newsapi.org/v2/top-headlines?country=us&apiKey={NEWS_API_KEY}&pageSize=2'
+    url = f'https://newsapi.org/v2/top-headlines?country=us&apiKey={NEWS_API_KEY}&pageSize={pageSize}'
     response = requests.get(url)
     articles = response.json().get('articles', [])
     return articles
