@@ -44,39 +44,36 @@ const NewsApp = () => {
   const currentArticle = articlesData.articles[currentIndex];
 
   return (
-    <div className="flex h-screen">
+    <div className={styles.newsContainer}>
       {/* Left side with gradient and text */}
-      <div className="w-1/2 bg-gradient-to-b from-black to-gray-800 flex items-center justify-center">
-        <h1 className="text-7xl font-bold text-white">NEWS</h1>
+      <div className={styles.leftPanel}>
+        <h1 className={styles.newsTitle}>NEWS</h1>
       </div>
       
       {/* Right side with the news cards */}
-      <div className="w-1/2 p-8 overflow-auto">
+      <div className={styles.rightPanel}>
         {error && <p className="text-red-500">{error}</p>}
         <TransitionGroup>
           {currentArticle && (
-            <CSSTransition key={currentIndex} timeout={500} classNames={{
-              enter: styles.fadeEnter,
-              enterActive: styles.fadeEnterActive,
-              exit: styles.fadeExit,
-              exitActive: styles.fadeExitActive,
-            }}>
+            <CSSTransition key={currentIndex} timeout={500} classNames="fade">
               <Card>
                 <CardContent className="pt-6">
                   <h2 className="text-3xl font-bold mb-2">{currentArticle.title}</h2>
                   <p className="text-sm text-gray-500 mb-4">
                     By {currentArticle.author} | Published on {new Date(currentArticle.publishDate).toLocaleDateString()}
                   </p>
+                  <div style={{display: 'flex', justifyContent: 'center'}}>
                   {currentArticle.imageUrl && (
-                    <img src={currentArticle.imageUrl} alt={currentArticle.title} className="w-full h-64 object-cover mb-4 rounded-lg" />
+                    <img src={currentArticle.imageUrl} alt={currentArticle.title} style={{ width: '80%', height: '40%'}}/>
                   )}
+                  </div>
                   <p className="text-lg">{currentArticle.summary}</p>
                 </CardContent>
                 <CardFooter className="pt-4">
                   <Button 
                     onClick={handleNextArticle} 
                     disabled={isLoading || (currentIndex === articlesData.articles.length - 1 && !articlesData.lastEvaluatedKey)}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+                    className={styles.button}
                   >
                     {isLoading ? 'Loading...' : 'Next Article'}
                   </Button>
