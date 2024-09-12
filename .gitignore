@@ -2,4 +2,8 @@
 local/news-fetch
 
 # Ignore Environment Variables
-.env
+local/.env
+news-app/.env
+
+# Ignore Node Modules
+news-app/node_modules
