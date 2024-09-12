@@ -5,20 +5,33 @@
 
 .leftPanel {
   flex: 1;
-  background: linear-gradient(to bottom, black, grey);
   display: flex;
   justify-content: center;
   align-items: center;
+  background: linear-gradient(-45deg, #404040, #000000);
+  background-size: 400% 400%;
+  -webkit-animation: gradient 15s ease infinite;
+  animation: gradient 15s ease infinite;
+  height: 100vh;
 }
 
 .newsTitle {
   color: white;
   font-size: 4rem;
   font-weight: bold;
+  text-align: center;
+
+  font-family: "Handjet", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+  font-variation-settings:
+    "ELGR" 1,
+    "ELSH" 2;
 }
 
 .rightPanel {
-  flex: 2;
+  flex: 1;
   padding: 20px;
   display: flex;
   justify-content: center;
@@ -33,13 +46,7 @@
   max-width: 600px;
   width: 100%;
   text-align: center;
-}
-
-.img {
-  width: 100%;
-  height: auto;
-  margin-bottom: 20px;
-  border-radius: 8px;
+  will-change: opacity, transform; /* Hint for smoother animations */
 }
 
 .button {
@@ -49,6 +56,7 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 300ms ease;
 }
 
 .button:hover {
@@ -59,11 +67,12 @@
 .fade-enter {
   opacity: 0;
   transform: translateY(20px);
+  will-change: opacity, transform;
 }
 .fade-enter-active {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 500ms, transform 500ms;
+  transition: opacity 800ms ease, transform 800ms ease;
 }
 .fade-exit {
   opacity: 1;
@@ -72,5 +81,29 @@
 .fade-exit-active {
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 500ms, transform 500ms;
+  transition: opacity 800ms ease, transform 800ms ease;
+}
+
+@-webkit-keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

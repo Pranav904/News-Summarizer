@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import styles from '../styles/NewsApp.module.css'; // Updated CSS module import
+import styles from '../styles/NewsApp.module.css';
 
 const NewsApp = () => {
+
+  useEffect(() => {
+    document.title = 'News Summarizer';
+  }, []);
+
   const [articlesData, setArticlesData] = useState({
     articles: [],
     lastEvaluatedKey: null,
@@ -45,25 +50,22 @@ const NewsApp = () => {
 
   return (
     <div className={styles.newsContainer}>
-      {/* Left side with gradient and text */}
       <div className={styles.leftPanel}>
-        <h1 className={styles.newsTitle}>NEWS</h1>
+        <h1 className={styles.newsTitle}>NEWS Summarizer</h1>
       </div>
-      
-      {/* Right side with the news cards */}
       <div className={styles.rightPanel}>
         {error && <p className="text-red-500">{error}</p>}
         <TransitionGroup>
           {currentArticle && (
-            <CSSTransition key={currentIndex} timeout={500} classNames="fade">
+            <CSSTransition key={currentIndex} timeout={600} classNames="fade">
               <Card>
                 <CardContent className="pt-6">
                   <h2 className="text-3xl font-bold mb-2">{currentArticle.title}</h2>
                   <p className="text-sm text-gray-500 mb-4">
-                    By {currentArticle.author} | Published on {new Date(currentArticle.publishDate).toLocaleDateString()}
+                    By {currentArticle.author ? currentArticle.author : "Unknown"} | Published on {new Date(currentArticle.publishDate).toLocaleDateString()}
                   </p>
-                  <div style={{display: 'flex', justifyContent: 'center'}}>
-                  {currentArticle.imageUrl && (
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    {currentArticle.imageUrl && (
                     <img src={currentArticle.imageUrl} alt={currentArticle.title} style={{ width: '80%', height: '40%'}}/>
                   )}
                   </div>

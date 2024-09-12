@@ -9,6 +9,11 @@ export default function Home() {
         padding: 0px;
       }
     `}</style>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Handjet:wght@100..900&display=swap');
+    </style>
+    
     <NewsApp />
   </div>
   );
