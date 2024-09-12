@@ -7,3 +7,6 @@ news-app/.env
 
 # Ignore Node Modules
 news-app/node_modules
+
+# Ignore next.js build
+news-app/.next
