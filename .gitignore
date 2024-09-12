@@ -1,12 +1,86 @@
 # Ignore Python Virtual Environment
 local/news-fetch
+venv/
+env/
 
 # Ignore Environment Variables
 local/.env
 news-app/.env
+*.env
 
 # Ignore Node Modules
 news-app/node_modules
+node_modules/
 
 # Ignore next.js build
 news-app/.next
+.next/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore log files
+*.log
+
+# Ignore coverage reports
+coverage/
+*.cover
+*.coverage
+*.cov
+*.gcov
+
+# Ignore build directories
+build/
+dist/
+*.egg-info/
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+*.orig
+*.rej
+
+# Ignore compiled files
+*.o
+*.obj
+*.dll
+*.class
+*.exe
+*.out
+*.app
+*.pdb
+*.so
+*.dylib
+*.lib
+*.a
+*.lo
+*.la
+
+# Ignore yarn files
+yarn.lock
+.pnp/
+.pnp.js
+
+# Ignore npm files
+package-lock.json
+
+# Ignore next.js output
+out/
