@@ -24,6 +24,7 @@
     "postcss": "^8.4.45",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-transition-group": "^4.4.5",
     "tailwind-merge": "^2.5.2",
     "tailwindcss": "^3.4.11",
     "uuid": "^10.0.0"

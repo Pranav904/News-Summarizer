@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter } from '../components/ui/card';
 import { Button } from '../components/ui/button';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import styles from '../styles/NewsApp.module.css'; // Updated CSS module import
 
 const NewsApp = () => {
   const [articlesData, setArticlesData] = useState({
@@ -43,36 +45,46 @@ const NewsApp = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-1/2 bg-gray-100 flex items-center justify-center">
-        <h1 className="text-6xl font-bold">NEWS</h1>
+      {/* Left side with gradient and text */}
+      <div className="w-1/2 bg-gradient-to-b from-black to-gray-800 flex items-center justify-center">
+        <h1 className="text-7xl font-bold text-white">NEWS</h1>
       </div>
+      
+      {/* Right side with the news cards */}
       <div className="w-1/2 p-8 overflow-auto">
         {error && <p className="text-red-500">{error}</p>}
-        {currentArticle ? (
-          <Card>
-            <CardContent className="pt-6">
-              <h2 className="text-2xl font-bold mb-2">{currentArticle.title}</h2>
-              <p className="text-sm text-gray-500 mb-4">
-                By {currentArticle.author} | Published on {new Date(currentArticle.publishDate).toLocaleDateString()}
-              </p>
-              <p className="mb-4">{currentArticle.summary}</p>
-              {currentArticle.imageUrl && (
-                <img src={currentArticle.imageUrl} alt={currentArticle.title} className="w-full h-48 object-cover mb-4" />
-              )}
-            </CardContent>
-            <CardFooter>
-              <Button 
-                onClick={handleNextArticle} 
-                disabled={isLoading || (currentIndex === articlesData.articles.length - 1 && !articlesData.lastEvaluatedKey)}
-                className="w-full"
-              >
-                {isLoading ? 'Loading...' : 'Next Article'}
-              </Button>
-            </CardFooter>
-          </Card>
-        ) : (
-          <p>Loading articles...</p>
-        )}
+        <TransitionGroup>
+          {currentArticle && (
+            <CSSTransition key={currentIndex} timeout={500} classNames={{
+              enter: styles.fadeEnter,
+              enterActive: styles.fadeEnterActive,
+              exit: styles.fadeExit,
+              exitActive: styles.fadeExitActive,
+            }}>
+              <Card>
+                <CardContent className="pt-6">
+                  <h2 className="text-3xl font-bold mb-2">{currentArticle.title}</h2>
+                  <p className="text-sm text-gray-500 mb-4">
+                    By {currentArticle.author} | Published on {new Date(currentArticle.publishDate).toLocaleDateString()}
+                  </p>
+                  {currentArticle.imageUrl && (
+                    <img src={currentArticle.imageUrl} alt={currentArticle.title} className="w-full h-64 object-cover mb-4 rounded-lg" />
+                  )}
+                  <p className="text-lg">{currentArticle.summary}</p>
+                </CardContent>
+                <CardFooter className="pt-4">
+                  <Button 
+                    onClick={handleNextArticle} 
+                    disabled={isLoading || (currentIndex === articlesData.articles.length - 1 && !articlesData.lastEvaluatedKey)}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+                  >
+                    {isLoading ? 'Loading...' : 'Next Article'}
+                  </Button>
+                </CardFooter>
+              </Card>
+            </CSSTransition>
+          )}
+        </TransitionGroup>
       </div>
     </div>
   );
