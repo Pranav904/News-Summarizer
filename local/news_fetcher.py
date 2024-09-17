@@ -15,8 +15,6 @@ AWS_SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_REGION = os.getenv('AWS_REGION')
 SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 
-# Rest of your code remains the same
-
 pageSize = 20
 
 def fetch_news():
