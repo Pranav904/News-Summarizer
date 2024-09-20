@@ -2,85 +2,111 @@ import json
 import os
 import boto3
 import google.generativeai as genai
-from google.ai.generativelanguage_v1beta.types import content
 from datetime import datetime
 import uuid
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
 
 # Configure Google AI
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-# Create the model
-generation_config = {
-  "temperature": 0.15,
-  "top_p": 0.95,
-  "top_k": 64,
-  "max_output_tokens": 8192,
-  "response_schema": content.Schema(
-    type = content.Type.OBJECT,
-    required = ["summary", "tags"],
-    properties = {
-      "summary": content.Schema(
-        type = content.Type.STRING,
-      ),
-      "tags": content.Schema(
-        type = content.Type.ARRAY,
-        items = content.Schema(
-          type = content.Type.STRING,
-        ),
-      ),
-    },
-  ),
-  "response_mime_type": "application/json",
-}
-
+# Google AI Model Configuration
 model = genai.GenerativeModel(
     model_name="gemini-1.5-flash",
-    generation_config=generation_config,
+    generation_config={
+        "temperature": 0.15,
+        "top_p": 0.95,
+        "top_k": 64,
+        "max_output_tokens": 8192,
+        "response_mime_type": "application/json",
+    }
 )
 
-# Initialize DynamoDB client
+# Initialize DynamoDB client and table outside the handler to avoid reinitialization
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('ArticleSummaries')
 
 def lambda_handler(event, context):
+    
+    """Main Lambda Handler to process SQS messages and summarize articles"""
+    
+    records_to_write = []
+    
     for record in event['Records']:
-        article_data = json.loads(record['body'])
-        
-        # Extract article url for summarization
-        article_url = article_data['url']
-        
-        # Call Google AI Studio for summarization
-        summary,tags = summarize_article(article_url)
-        
-        # Prepare item for DynamoDB
-        item = {
-            'id': str(uuid.uuid4()),
-            'messageReceivedTimestamp': int(record['attributes']['SentTimestamp']),
-            'messageProcessedTimestamp': int(datetime.now().timestamp() * 1000),
-            'url': article_data['url'],
-            'summary': summary,
-            'tags': tags,
-            'title': article_data['title'],
-            'author': article_data.get('author', 'Unknown'),
-            'publishDate': int(datetime.fromisoformat(article_data['publishedAt'].replace('Z', '+00:00')).timestamp() * 1000),
-            'contentLength': len(summary),
-            'language': 'en',  # Assuming English, you might want to detect this
-            'imageUrl': article_data.get('urlToImage', ''),
-            'status': 'processed'
-        }
-        
-        # Save to DynamoDB
-        table.put_item(Item=item)
-        
-        print(f"Processed article: {item['title']}")
+        try:
+            # Parse SQS message
+            article_data = json.loads(record['body'])
+            
+            # Extract article URL and other details
+            article_url = article_data['url']
+            title = article_data.get('title', 'Untitled')
+            author = article_data.get('author', 'Unknown')
+            publish_date = article_data.get('publishedAt')
+            publish_timestamp = int(datetime.fromisoformat(publish_date.replace('Z', '+00:00')).timestamp() * 1000)
+
+            # Summarize article and extract tags
+            summary, tags = summarize_article(article_url)
+            
+            if not tags or summary in ["Summary not available", "Unable to generate summary"]:
+                logger.info(f"Skipping article: {title}. Reason: Empty summary or tags.")
+                continue
+            
+            # Prepare item for DynamoDB
+            item = {
+                'id': str(uuid.uuid4()),
+                'messageReceivedTimestamp': int(record['attributes']['SentTimestamp']),
+                'messageProcessedTimestamp': int(datetime.now().timestamp() * 1000),
+                'url': article_url,
+                'summary': summary,
+                'tags': tags,
+                'title': title,
+                'author': author,
+                'publishDate': publish_timestamp,
+                'contentLength': len(summary),
+                'language': 'en',  # Assuming English
+                'imageUrl': article_data.get('urlToImage', ''),
+                'status': 'processed'
+            }
+            
+            records_to_write.append(item)
+            logger.info(f"Processed article: {title}")
+
+        except Exception as e:
+            logger.error(f"Error processing record: {record}. Error: {str(e)}")
+            continue
+    
+    # Batch write to DynamoDB
+    if records_to_write:
+        write_to_dynamodb(records_to_write)
 
 def summarize_article(url):
+    
+    """Summarize the article using Google Generative AI"""
+    
     prompt = [
       "Summarize the given news article by accessing the given link in under 150 words. Select relevant tags from: World News, Politics, Economy, Business, Technology, Health, Environment, Science, Education, Sports, Entertainment, Culture, Lifestyle, Travel, Crime, Opinion, Social Issues, Innovation, Human Rights, Weather.",
       url
     ]
-    response = model.generate_content(prompt)
-    result = json.loads(response.text)
-    summary = result.get("summary")
-    tags = result.get("tags")
-    return summary,tags
+
+    try:
+        response = model.generate_content(prompt)
+        result = json.loads(response.text)
+        summary = result.get("summary", "Summary not available")
+        tags = result.get("tags", [])
+        return summary, tags
+
+    except Exception as e:
+        logger.error(f"Failed to summarize article at {url}: {str(e)}")
+        return "Unable to generate summary", []
+
+def write_to_dynamodb(items):
+    
+    """Batch write items to DynamoDB table"""
+    
+    with table.batch_writer() as batch:
+        for item in items:
+            batch.put_item(Item=item)
+    logger.info(f"Successfully wrote {len(items)} items to DynamoDB")
