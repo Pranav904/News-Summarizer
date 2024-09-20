@@ -2,6 +2,7 @@ import json
 import os
 import boto3
 import google.generativeai as genai
+from google.ai.generativelanguage_v1beta.types import content
 from datetime import datetime
 import uuid
 
@@ -10,12 +11,28 @@ genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
 # Create the model
 generation_config = {
-    "temperature": 1,
-    "top_p": 0.95,
-    "top_k": 64,
-    "max_output_tokens": 8192,
-    "response_mime_type": "text/plain",
+  "temperature": 0.15,
+  "top_p": 0.95,
+  "top_k": 64,
+  "max_output_tokens": 8192,
+  "response_schema": content.Schema(
+    type = content.Type.OBJECT,
+    required = ["summary", "tags"],
+    properties = {
+      "summary": content.Schema(
+        type = content.Type.STRING,
+      ),
+      "tags": content.Schema(
+        type = content.Type.ARRAY,
+        items = content.Schema(
+          type = content.Type.STRING,
+        ),
+      ),
+    },
+  ),
+  "response_mime_type": "application/json",
 }
+
 model = genai.GenerativeModel(
     model_name="gemini-1.5-flash",
     generation_config=generation_config,
@@ -29,11 +46,11 @@ def lambda_handler(event, context):
     for record in event['Records']:
         article_data = json.loads(record['body'])
         
-        # Extract content for summarization
-        content_to_summarize = article_data['url']
+        # Extract article url for summarization
+        article_url = article_data['url']
         
         # Call Google AI Studio for summarization
-        summary = summarize_article(content_to_summarize)
+        summary,tags = summarize_article(article_url)
         
         # Prepare item for DynamoDB
         item = {
@@ -42,6 +59,7 @@ def lambda_handler(event, context):
             'messageProcessedTimestamp': int(datetime.now().timestamp() * 1000),
             'url': article_data['url'],
             'summary': summary,
+            'tags': tags,
             'title': article_data['title'],
             'author': article_data.get('author', 'Unknown'),
             'publishDate': int(datetime.fromisoformat(article_data['publishedAt'].replace('Z', '+00:00')).timestamp() * 1000),
@@ -56,10 +74,13 @@ def lambda_handler(event, context):
         
         print(f"Processed article: {item['title']}")
 
-def summarize_article(content):
+def summarize_article(url):
     prompt = [
-        "Summarize the given news article in under 90 words.",
-        content
+      "Summarize the given news article by accessing the given link in under 150 words. Select relevant tags from: World News, Politics, Economy, Business, Technology, Health, Environment, Science, Education, Sports, Entertainment, Culture, Lifestyle, Travel, Crime, Opinion, Social Issues, Innovation, Human Rights, Weather.",
+      url
     ]
     response = model.generate_content(prompt)
-    return response.text
+    result = json.loads(response.text)
+    summary = result.get("summary")
+    tags = result.get("tags")
+    return summary,tags
