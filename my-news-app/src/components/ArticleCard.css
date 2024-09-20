@@ -1,0 +1,94 @@
+.article-card {
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 90%;
+    max-height: fit-content;
+    text-align: center;
+    animation: fade-in 0.5s ease-in-out;
+  }
+  
+  .article-card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+  
+  .article-card img {
+    width: 100%;
+    max-width: 500px;
+    height: 200px; /* Default height */
+    object-fit: cover; /* Ensure the image scales properly */
+    margin-bottom: 15px;
+    border-radius: 8px;
+  }
+  
+  .article-card .image-placeholder {
+    width: 100%;
+    height: 200px; /* Default height for the image placeholder */
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .article-meta {
+    display: flex;
+    justify-content: space-around;
+    margin: 15px 0;
+  }
+  
+  .article-meta span {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  a {
+    text-decoration: none;
+    color: #ff7e5f;
+    font-weight: bold;
+  }
+  
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  /* Media queries to adjust image size based on card width */
+  @media (max-width: 1200px) {
+    .article-card img {
+      height: 180px; /* Slightly smaller image on smaller screens */
+    }
+  
+    .article-card .image-placeholder {
+      height: 180px; /* Match image height */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .article-card img {
+      height: 150px; /* Even smaller image on smaller screens */
+    }
+  
+    .article-card .image-placeholder {
+      height: 150px; /* Match image height */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .article-card img {
+      height: 120px; /* Smallest image for mobile */
+    }
+  
+    .article-card .image-placeholder {
+      height: 120px; /* Match image height */
+    }
+  }
+  
