@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import ArticleCard from './components/ArticleCard';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import ArticleCard from "./components/ArticleCard";
+import "./App.css";
 
 function App() {
   const [articles, setArticles] = useState([]);
@@ -14,12 +14,12 @@ function App() {
 
   const fetchArticles = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/articles');
+      const response = await fetch("http://localhost:3000/api/articles");
       const data = await response.json();
       setArticles(data.articles);
       setLoading(false);
     } catch (error) {
-      setError('Error loading articles');
+      setError("Error loading articles");
       setLoading(false);
     }
   };
@@ -31,8 +31,8 @@ function App() {
   return (
     <div className="container">
       <div className="left-section">
-        <h1>Static Section</h1>
-        <p>This section is static and remains unchanged.</p>
+        <h1 className="alex-brush-regular">Briefly</h1>
+        {/* <p>This section is static and remains unchanged.</p> */}
       </div>
 
       <div className="right-section">
@@ -43,11 +43,11 @@ function App() {
             <div className="placeholder shimmer"></div>
           </div>
         )}
-        
+
         {!loading && !error && articles.length > 0 && (
           <ArticleCard article={articles[currentIndex]} />
         )}
-        
+
         {!loading && articles.length > 1 && (
           <button className="next-button" onClick={handleNextArticle}>
             Next Article
@@ -56,6 +56,9 @@ function App() {
 
         {error && <div className="error">{error}</div>}
       </div>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap');
+      </style>
     </div>
   );
 }
