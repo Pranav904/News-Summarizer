@@ -18,8 +18,13 @@ SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 pageSize = 20
 
 def fetch_news():
-    url = f'https://newsapi.org/v2/top-headlines?country=us&apiKey={NEWS_API_KEY}&pageSize={pageSize}'
-    response = requests.get(url)
+    url = f'https://newsapi.org/v2/top-headlines'
+    params = {
+        'language': 'en',
+        'pageSize': 15,
+        'apiKey': NEWS_API_KEY
+    }
+    response = requests.get(url, params=params)
     articles = response.json().get('articles', [])
     return articles
 
@@ -39,7 +44,7 @@ def job():
     articles = fetch_news()
     push_to_sqs(articles)
 
-schedule.every(30).seconds.do(job)
+schedule.every(90).seconds.do(job)
 
 if __name__ == "__main__":
     while True:
