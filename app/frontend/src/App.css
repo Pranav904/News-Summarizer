@@ -80,3 +80,10 @@
   font-size: 18px;
   margin-top: 20px;
 }
+
+.alex-brush-regular {
+  font-family: "Alex Brush", cursive;
+  font-size: 10vh;
+  font-weight: 400;
+  font-style: normal;
+}
