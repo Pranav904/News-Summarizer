@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import ArticleCard from "./components/ArticleCard";
 import "./App.css";
-import Amplify from 'aws-amplify';
-import awsconfig from './aws-exports';
-import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
+import { Amplify } from "aws-amplify";
+import awsconfig from "./aws-exports";
+import { Authenticator, Button } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
+import { signOut } from "aws-amplify/auth";
 
 Amplify.configure(awsconfig);
 
@@ -36,37 +38,42 @@ function App() {
   return (
     <div className="container">
       <div className="left-section">
-        <AmplifySignOut />
         <h1 className="alex-brush-regular">Briefly</h1>
         {/* <p>This section is static and remains unchanged.</p> */}
       </div>
+      <Authenticator>
+        {(signOut, user) => (
+          <div className="right-section">
+            <Button onClick={signOut}>Sign Out</Button>
+            {loading && (
+              <div className="article-placeholder">
+                <div className="placeholder shimmer"></div>
+                <div className="placeholder shimmer"></div>
+                <div className="placeholder shimmer"></div>
+              </div>
+            )}
 
-      <div className="right-section">
-        {loading && (
-          <div className="article-placeholder">
-            <div className="placeholder shimmer"></div>
-            <div className="placeholder shimmer"></div>
-            <div className="placeholder shimmer"></div>
+            {!loading && !error && articles.length > 0 && (
+              <ArticleCard article={articles[currentIndex]} />
+            )}
+
+            {!loading && articles.length > 1 && (
+              <button className="next-button" onClick={handleNextArticle}>
+                Next Article
+              </button>
+            )}
+
+            {error && <div className="error">{error}</div>}
           </div>
         )}
+      </Authenticator>
 
-        {!loading && !error && articles.length > 0 && (
-          <ArticleCard article={articles[currentIndex]} />
-        )}
-
-        {!loading && articles.length > 1 && (
-          <button className="next-button" onClick={handleNextArticle}>
-            Next Article
-          </button>
-        )}
-
-        {error && <div className="error">{error}</div>}
-      </div>
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap');
+        @import
+        url('https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap');
       </style>
     </div>
   );
 }
 
-export default withAuthenticator(App);
+export default App;
