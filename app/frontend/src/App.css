@@ -63,7 +63,7 @@
   margin-top: 20px;
   padding: 10px 20px;
   font-size: 16px;
-  background-color: #ff7e5f;
+  background-color: #333;
   color: white;
   border: none;
   border-radius: 5px;
@@ -72,7 +72,7 @@
 }
 
 .next-button:hover {
-  background-color: #feb47b;
+  background-color: #333;
 }
 
 .error {
