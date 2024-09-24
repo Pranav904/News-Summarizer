@@ -84,3 +84,6 @@ package-lock.json
 
 # Ignore next.js output
 out/
+
+# Ignore news-app frontend
+app/frontend/.gitignore

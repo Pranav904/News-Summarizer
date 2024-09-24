@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import ArticleCard from "./components/ArticleCard";
 import "./App.css";
+import Amplify from 'aws-amplify';
+import awsconfig from './aws-exports';
+import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
+
+Amplify.configure(awsconfig);
 
 function App() {
   const [articles, setArticles] = useState([]);
@@ -31,6 +36,7 @@ function App() {
   return (
     <div className="container">
       <div className="left-section">
+        <AmplifySignOut />
         <h1 className="alex-brush-regular">Briefly</h1>
         {/* <p>This section is static and remains unchanged.</p> */}
       </div>
@@ -63,4 +69,4 @@ function App() {
   );
 }
 
-export default App;
+export default withAuthenticator(App);
