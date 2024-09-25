@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 import { Amplify } from "aws-amplify";
 import awsconfig from "./aws-exports";
-import { Authenticator, Button } from "@aws-amplify/ui-react";
+import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import Header from "./components/Header";
 import ArticleList from "./components/ArticleList";
@@ -49,8 +49,7 @@ function App() {
       <Authenticator signUpAttributes={["email", "name", "gender"]} formFields={fields}>
         {({ signOut }) => (
           <div className="right-section">
-            <Button onClick={signOut}>Sign Out</Button>
-            <ArticleList />
+            <ArticleList onSignOut={signOut} />
           </div>
         )}
       </Authenticator>

@@ -1,5 +1,5 @@
 import React from "react";
-// import "./NextArticleButton.css";
+import "./NextArticleButton.css";
 
 const NextArticleButton = ({ onNext }) => {
   return (

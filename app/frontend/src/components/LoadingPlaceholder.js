@@ -1,5 +1,5 @@
 import React from "react";
-// import "./LoadingPlaceholder.css";
+import "./LoadingPlaceholder.css";
 
 const LoadingPlaceholder = () => {
   return (

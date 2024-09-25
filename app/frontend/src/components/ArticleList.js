@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import ArticleCard from "./ArticleCard";
 import LoadingPlaceholder from "./LoadingPlaceholder";
 import { fetchArticles } from "../services/articleService";
-// import "./ArticleList.css";
+import NextArticleButton from "./NextArticleButton";
+import SignOutButton from "./SignOutButton";
+import "./ArticleList.css";
 
-const ArticleList = () => {
+const ArticleList = ({ onSignOut }) => {
   const [articles, setArticles] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -40,11 +42,12 @@ const ArticleList = () => {
   return (
     <div className="article-section">
       {articles.length > 0 && <ArticleCard article={articles[currentIndex]} />}
-      {articles.length > 1 && (
-        <button className="next-button" onClick={handleNextArticle}>
-          Next Article
-        </button>
-      )}
+      <div>
+        {articles.length > 1 && (
+          <NextArticleButton onNext={handleNextArticle} />
+        )}
+        <SignOutButton onSignOut={onSignOut} />
+      </div>
     </div>
   );
 };
