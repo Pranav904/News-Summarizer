@@ -6,7 +6,7 @@ import NextArticleButton from "./NextArticleButton";
 import SignOutButton from "./SignOutButton";
 import "./ArticleList.css";
 
-const ArticleList = ({ onSignOut }) => {
+const ArticleList = ({ onSignOut , user}) => {
   const [articles, setArticles] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -31,7 +31,7 @@ const ArticleList = ({ onSignOut }) => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % articles.length);
   };
 
-  if (loading) {
+  if (loading || !user) {
     return <LoadingPlaceholder />;
   }
 

@@ -4,7 +4,7 @@ import { Amplify } from "aws-amplify";
 import awsconfig from "./aws-exports";
 import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
-import { getCurrentUser, signOut as amplifySignOut } from "aws-amplify/auth"; // Use getCurrentUser in v6
+import { getCurrentUser, signOut as amplifySignOut } from "aws-amplify/auth";
 import Header from "./components/Header";
 import ArticleList from "./components/ArticleList";
 
@@ -46,15 +46,15 @@ let fields = {
 function App() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
-  // Check if the user is authenticated when the app loads
   useEffect(() => {
     checkUserAuthentication();
   }, []);
 
   const checkUserAuthentication = async () => {
     try {
-      const user = await getCurrentUser(); // Use getCurrentUser in Amplify v6
+      const user = await getCurrentUser();
       setUser(user);
     } catch (error) {
       console.log("User not authenticated");
@@ -65,11 +65,19 @@ function App() {
 
   const handleSignOut = async () => {
     try {
-      await amplifySignOut(); // Use Amplify v6 signOut
-      setUser(null); // Clear user state on sign out
+      await amplifySignOut();
+      setUser(null);
     } catch (error) {
       console.error("Error signing out: ", error);
     }
+  };
+
+  const handleLoginClick = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
   };
 
   if (isLoading) {
@@ -78,24 +86,23 @@ function App() {
 
   return (
     <div className="container">
-      <Header user={user} />
-      {!user ? (
-        <Authenticator
-          signUpAttributes={["email", "name", "gender"]}
-          formFields={fields}
-        >
-          {({ user }) => {
-            setUser(user); // Set user state when signed in
-            return (
-              <div className="right-section">
-                <ArticleList onSignOut={handleSignOut} />
-              </div>
-            );
-          }}
-        </Authenticator>
-      ) : (
-        <div className="right-section">
-          <ArticleList onSignOut={handleSignOut} />
+      <Header user={user} onLoginClick={handleLoginClick} />
+      <div className="right-section">
+        <ArticleList onSignOut={handleSignOut} user={user}/>
+      </div>
+      {showModal && (
+        <div className="modal">
+          <button onClick={handleCloseModal} className="close-modal">X</button>
+          <Authenticator
+            signUpAttributes={["email", "name", "gender"]}
+            formFields={fields}
+          >
+            {({ user }) => {
+              setUser(user);
+              setShowModal(false);
+              return null;
+            }}
+          </Authenticator>
         </div>
       )}
       <style>
