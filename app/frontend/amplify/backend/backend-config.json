@@ -1,6 +1,6 @@
 {
   "auth": {
-    "brieflyd19a0559": {
+    "briefly2cd68aba": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -13,13 +13,12 @@
           "passwordPolicyMinLength": 8
         },
         "signupAttributes": [
-          "EMAIL"
+          "EMAIL",
+          "GENDER",
+          "NAME"
         ],
         "socialProviders": [],
-        "usernameAttributes": [
-          "EMAIL",
-          "PHONE_NUMBER"
-        ],
+        "usernameAttributes": [],
         "verificationMechanisms": [
           "EMAIL"
         ]

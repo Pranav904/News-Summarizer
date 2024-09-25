@@ -5,9 +5,40 @@ import { Amplify } from "aws-amplify";
 import awsconfig from "./aws-exports";
 import { Authenticator, Button } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
-import { signOut } from "aws-amplify/auth";
 
 Amplify.configure(awsconfig);
+
+let fields = {
+  signUp: {
+    email: {
+      label: "Email",
+      placeholder: "Enter your email",
+      isRequired: true,
+      type: "email",
+    },
+    username: {
+      label: "Username",
+      placeholder: "Enter your username",
+      isRequired: true,
+    },
+    password: {
+      label: "Password",
+      placeholder: "Enter your password",
+      isRequired: true,
+    },
+    name: {
+      label: "Name",
+      placeholder: "Enter your name",
+      isRequired: true,
+    },
+    gender: {
+      label: "Gender",
+      type: "select", // Dropdown
+      options: ["Male", "Female", "Other"], // Gender options
+      isRequired: true, // Make gender field required
+      placeholder: "Select your gender",
+    },
+  },};
 
 function App() {
   const [articles, setArticles] = useState([]);
@@ -39,10 +70,13 @@ function App() {
     <div className="container">
       <div className="left-section">
         <h1 className="alex-brush-regular">Briefly</h1>
-        {/* <p>This section is static and remains unchanged.</p> */}
       </div>
-      <Authenticator>
-        {(signOut, user) => (
+      <Authenticator
+        signUpAttributes={["email", "name", "gender"]}
+        formFields={fields}
+
+      >
+        {({ signOut, user }) => (
           <div className="right-section">
             <Button onClick={signOut}>Sign Out</Button>
             {loading && (
@@ -52,7 +86,6 @@ function App() {
                 <div className="placeholder shimmer"></div>
               </div>
             )}
-
             {!loading && !error && articles.length > 0 && (
               <ArticleCard article={articles[currentIndex]} />
             )}
