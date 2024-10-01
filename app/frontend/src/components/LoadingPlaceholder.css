@@ -1,18 +1,92 @@
-.article-placeholder {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.load-wraper {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background-color: rgb(211, 211, 211);
+  z-index: 44;
+  overflow: hidden;
+  border-radius: 5px;
+}
+.activity {
+  position: absolute;
+  left: -45%;
+  height: 100%;
+  width: 45%;
+  background-image: linear-gradient(
+    to left,
+    rgba(251, 251, 251, 0.05),
+    rgba(251, 251, 251, 0.3),
+    rgba(251, 251, 251, 0.6),
+    rgba(251, 251, 251, 0.3),
+    rgba(251, 251, 251, 0.05)
+  );
+  background-image: -moz-linear-gradient(
+    to left,
+    rgba(251, 251, 251, 0.05),
+    rgba(251, 251, 251, 0.3),
+    rgba(251, 251, 251, 0.6),
+    rgba(251, 251, 251, 0.3),
+    rgba(251, 251, 251, 0.05)
+  );
+  background-image: -webkit-linear-gradient(
+    to left,
+    rgba(251, 251, 251, 0.05),
+    rgba(251, 251, 251, 0.3),
+    rgba(251, 251, 251, 0.6),
+    rgba(251, 251, 251, 0.3),
+    rgba(251, 251, 251, 0.05)
+  );
+  animation: loading 1s infinite;
+  z-index: 45;
+}
 
-  .placeholder {
-    width: 80%;
-    height: 20px;
-    background-color: #e0e0e0;
-    margin: 10px 0;
-    border-radius: 5px;
+@keyframes loading {
+  0% {
+    left: -45%;
   }
-  
-  .shimmer {
-    animation: shimmer 1.5s infinite;
+  100% {
+    left: 100%;
   }
+}
+
+.card {
+  margin: 20px;
+  height: 260px;
+  width: 400px;
+  position: relative;
+  float: left;
+}
+.card-image {
+  height: 200px;
+  width: 400px;
+  position: relative;
+}
+.card-content {
+  margin-top: 20px;
+  min-height: 40px;
+  display: flex;
+}
+.card-avatar {
+  width: 40px;
+  float: left;
+  flex: none;
+}
+.card-avatar-text {
+  margin-left: 20px;
+  float: left;
+}
+.card-content,
+.card-text,
+.card-avatar,
+.card-avatar-text {
+  height: 40px;
+  position: relative;
+}
+.card-content,
+.card-text,
+.card-avatar-text {
+  width: 100%;
+}
+.circular {
+  border-radius: 50%;
+}
