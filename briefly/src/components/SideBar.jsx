@@ -12,7 +12,7 @@ import Image from "next/image";
 
 export default function SidebarComponent({ userProfile }) {
 
-  const username = userProfile.given_name;
+  const username = userProfile.name;
   const userAvatar = userProfile.picture;
 
   const links = [
@@ -67,6 +67,7 @@ export default function SidebarComponent({ userProfile }) {
                     alt="Avatar" />
                 ),
               }} />
+
           </div>
         </SidebarBody>
       </Sidebar>
