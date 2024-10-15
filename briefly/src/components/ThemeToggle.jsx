@@ -1,23 +1,11 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
+import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
-import { cn } from '@/app/lib/utils';
+import { cn } from "@/app/lib/utils";
 
 const ThemeToggle = () => {
-  const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
-
-  // useEffect only runs on the client, so now we can safely show the UI
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
   return (
     <motion.button
       className={cn(
@@ -32,7 +20,7 @@ const ThemeToggle = () => {
       whileHover={{
         scale: 1.1,
       }}
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       <motion.svg
         xmlns="http://www.w3.org/2000/svg"
