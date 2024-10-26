@@ -1,8 +1,39 @@
+'use client';
+
 import SidebarComponent from "./SideBar";
 import NewsCards from "./NewsCards";
 import { cn } from "@/app/lib/utils";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function NewsApp({ user }) {
+
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      try {
+        const response = await fetch('/api/preferences');
+        const data = await response.json();
+
+        if (data?.preferences?.length > 0) {
+          setSelectedTags(data.preferences);
+        } else {
+          router.push("/preferences");
+        }
+      } catch (err) {
+        setError("Failed to fetch preferences");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) fetchPreferences();
+  }, [user]);
+
   return (
     <div
       className={cn(
@@ -10,8 +41,8 @@ export default function NewsApp({ user }) {
         "h-screen"
       )}
     >
-      <SidebarComponent userProfile={user} />
-      <NewsCards />
+      <SidebarComponent userProfile={user}/>
+      <NewsCards fetchedTags={selectedTags}/>
     </div>
   );
 }
