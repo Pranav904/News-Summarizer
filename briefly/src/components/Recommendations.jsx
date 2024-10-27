@@ -53,18 +53,18 @@ function Recommendations() {
   }, [currentIndex, articles]);
 
   return (
-    <div className="h-full container mx-auto p-6 flex flex-row items-center">
+    <div className="h-full container mx-auto p-6 flex items-center">
       {loading && articles.length === 0 ? (
         <p>Loading...</p>
       ) : currentArticle ? (
-        <div className="flex items-center p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg ">
+        <div className="h-full flex flex-col lg:flex-row items-center p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg ">
           <img
             src={currentArticle.image_url}
             alt={currentArticle.title}
             className="max-w-80 max-h-80 object-fill rounded-lg mr-8"
           />
           <div className="flex-1">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl mb-6 font-semibold dark:text-gray-100">
+            <h2 className="text-xl md:text-2xl lg:text-5xl mb-6 font-semibold dark:text-gray-100">
               {currentArticle.title}
             </h2>
             <div className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -77,7 +77,7 @@ function Recommendations() {
                 ))}
             </div>
 
-            <p className="text-base sm:text-lg md:text-xl text-gray-700 dark:text-gray-300 mt-2">
+            <p className="text-base 2xl:text-xl text-gray-700 dark:text-gray-300 mt-2">
               {currentArticle.content}
             </p>
             <div className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
