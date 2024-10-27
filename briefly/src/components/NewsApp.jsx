@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function NewsApp({ user }) {
-
   const [selectedTags, setSelectedTags] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,22 +16,26 @@ export default function NewsApp({ user }) {
     const fetchPreferences = async () => {
       try {
         const response = await fetch('/api/preferences');
+        if (!response.ok) throw new Error("Failed to fetch preferences");
         const data = await response.json();
 
         if (data?.preferences?.length > 0) {
           setSelectedTags(data.preferences);
         } else {
-          router.push("/preferences");
+          router.replace("/preferences");
         }
       } catch (err) {
-        setError("Failed to fetch preferences");
+        setError(err.message || "An error occurred");
       } finally {
         setLoading(false);
       }
     };
 
     if (user) fetchPreferences();
-  }, [user]);
+  }, [user, router]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div
@@ -41,11 +44,8 @@ export default function NewsApp({ user }) {
         "h-screen"
       )}
     >
-      <SidebarComponent userProfile={user}/>
-      <NewsCards userProfile={user}/>
+      <SidebarComponent userProfile={user} />
+      <NewsCards userProfile={user} selectedTags={selectedTags} />
     </div>
   );
 }
-
-// TODO: Remove Logout Button Component
-// TODO: Remove Preferences Prop, it will be fetched from the API
