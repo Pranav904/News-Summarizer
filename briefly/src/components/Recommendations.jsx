@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { IconCaretUpFilled, IconCaretDownFilled } from "@tabler/icons-react";
-import Tag from "./Tag"; // Import the Tag component
+import Tag from "./Tag";
 
 function Recommendations(selectedTags) {
   const [articles, setArticles] = useState([]);
@@ -70,8 +70,11 @@ function Recommendations(selectedTags) {
             width={300}
             className="max-w-80 max-h-80 object-fill rounded-lg mr-8"
           /> */}
-          <img src={currentArticle.image_url} alt={currentArticle.title} className="max-w-80 max-h-80 object-fill rounded-lg mr-8">
-          </img>
+          <img
+            src={currentArticle.image_url}
+            alt={currentArticle.title}
+            className="max-w-80 max-h-80 object-fill rounded-lg mr-8"
+          ></img>
           <div className="flex-1">
             <h2 className="text-xl md:text-2xl lg:text-5xl mb-6 font-semibold dark:text-gray-100">
               {currentArticle.title}
@@ -96,8 +99,7 @@ function Recommendations(selectedTags) {
         </div>
       ) : (
         <div className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse">
-          <p>No more articles available.</p> /* Displayed when there are no more
-          articles to show */
+          <p>No more articles available.</p>
         </div>
       )}
 
