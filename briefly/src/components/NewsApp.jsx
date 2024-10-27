@@ -42,9 +42,10 @@ export default function NewsApp({ user }) {
       )}
     >
       <SidebarComponent userProfile={user}/>
-      <NewsCards fetchedTags={selectedTags}/>
+      <NewsCards userProfile={user}/>
     </div>
   );
 }
 
 // TODO: Remove Logout Button Component
+// TODO: Remove Preferences Prop, it will be fetched from the API
