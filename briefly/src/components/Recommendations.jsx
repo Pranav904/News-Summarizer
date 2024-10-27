@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { IconCaretUpFilled, IconCaretDownFilled } from "@tabler/icons-react";
 import Tag from "./Tag"; // Import the Tag component
 
-function Recommendations() {
+function Recommendations( selectedTags ) {
   const [articles, setArticles] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastKey, setLastKey] = useState(null);
@@ -12,7 +12,7 @@ function Recommendations() {
   const fetchArticles = async (key) => {
     setLoading(true);
     const res = await fetch(
-      `/api/recommendation?lastKey=${key ? JSON.stringify(key) : ""}`
+      `/api/recommendation?lastKey=${key ? JSON.stringify(key) : ""}`+`&tags=${selectedTags ? JSON.stringify(selectedTags.selectedTags) : ""}`
     );
     const data = await res.json();
 
@@ -55,7 +55,7 @@ function Recommendations() {
   return (
     <div className="h-full container mx-auto p-6 flex items-center">
       {loading && articles.length === 0 ? (
-        <p>Loading...</p>
+        <div className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
       ) : currentArticle ? (
         <div className="h-full flex flex-col lg:flex-row items-center p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg ">
           <img
@@ -83,11 +83,13 @@ function Recommendations() {
             <div className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
               Published: {currentArticle.published_date}
             </div>
-            
           </div>
         </div>
       ) : (
-        <p>No more articles available.</p>
+        <div className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse">
+          <p>No more articles available.</p> /* Displayed when there are no more
+          articles to show */
+        </div>
       )}
 
       <div className="flex flex-col ml-4">
@@ -106,9 +108,7 @@ function Recommendations() {
           <IconCaretDownFilled />
         </button>
       </div>
-
-      {loading && <p className="mt-4">Loading more articles...</p>}
-      {nextImageLoading && <p className="mt-4">Loading next image...</p>}
+      {/* {nextImageLoading && <p className="mt-4">Loading next image...</p>} */}
     </div>
   );
 }
