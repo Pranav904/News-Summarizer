@@ -37,7 +37,6 @@ export const GET = withApiAuthRequired(async function handler(req) {
 
       // Construct filter expression and fetch recommended articles based on user tags
       const filterExpression = preferredTags.map((_, idx) => `contains(tags, :tag${idx})`).join(' OR ');
-      
       const expressionAttributeValues = preferredTags.reduce((acc, tag, idx) => {
          acc[`:tag${idx}`] = { S: tag };
          return acc;
