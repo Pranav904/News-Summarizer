@@ -19,15 +19,11 @@ export const GET = withApiAuthRequired(async function handler(req) {
    // Extract lastKey from query parameters (for pagination)
    const { searchParams } = new URL(req.url);
    const lastKey = searchParams.get('lastKey') ? JSON.parse(searchParams.get('lastKey')) : undefined;
+   const tags = searchParams.get('tags') ? JSON.parse(searchParams.get('tags')) : undefined;
 
    try {
-      // Fetch user preferences from DynamoDB
-      const userPreferencesCommand = new GetItemCommand({
-         TableName: 'preferences',
-         Key: { user_id: { S: userId } },
-      });
-      const userPreferencesData = await dynamoDbClient.send(userPreferencesCommand);
-      const preferredTags = userPreferencesData.Item?.preferences?.SS || [];
+      console.log('Fetching recommendations for user:', userId);
+      const preferredTags = tags || [];
 
     //   console.log('Preferred tags:', preferredTags);
 
