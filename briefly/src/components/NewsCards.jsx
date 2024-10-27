@@ -20,9 +20,7 @@ export default function NewsCards({ userProfile }) {
         <p className={`${alexBrush.className} text-3xl`}>Welcome , {userProfile.nickname} !</p>
           <ThemeToggle />
         </div>
-        <div className="container h-[90%] mx-auto p-6">
-          <Recommendations/>
-        </div>
+        <Recommendations/>
       </div>
     </div>
   );
