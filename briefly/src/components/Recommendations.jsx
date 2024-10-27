@@ -1,29 +1,35 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IconCaretUpFilled, IconCaretDownFilled } from "@tabler/icons-react";
 import Tag from "./Tag"; // Import the Tag component
 
-function Recommendations( selectedTags ) {
+function Recommendations(selectedTags) {
   const [articles, setArticles] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastKey, setLastKey] = useState(null);
   const [loading, setLoading] = useState(false);
   const [nextImageLoading, setNextImageLoading] = useState(false);
 
-  const fetchArticles = async (key) => {
-    setLoading(true);
-    const res = await fetch(
-      `/api/recommendation?lastKey=${key ? JSON.stringify(key) : ""}`+`&tags=${selectedTags ? JSON.stringify(selectedTags.selectedTags) : ""}`
-    );
-    const data = await res.json();
+  const fetchArticles = useCallback(
+    async (key) => {
+      setLoading(true);
+      const res = await fetch(
+        `/api/recommendation?lastKey=${key ? JSON.stringify(key) : ""}` +
+          `&tags=${
+            selectedTags ? JSON.stringify(selectedTags.selectedTags) : ""
+          }`
+      );
+      const data = await res.json();
 
-    setArticles((prevArticles) => [...prevArticles, ...data.articles]);
-    setLastKey(data.lastKey);
-    setLoading(false);
-  };
+      setArticles((prevArticles) => [...prevArticles, ...data.articles]);
+      setLastKey(data.lastKey);
+      setLoading(false);
+    },
+    [setLastKey, setArticles, setLoading, selectedTags]
+  );
 
   useEffect(() => {
     fetchArticles();
-  }, []);
+  }, [fetchArticles]);
 
   const nextArticle = () => {
     if (currentIndex < articles.length - 1) {
@@ -41,7 +47,6 @@ function Recommendations( selectedTags ) {
 
   const currentArticle = articles[currentIndex];
 
-  // Preload next article's image
   useEffect(() => {
     const nextIndex = currentIndex + 1;
     if (articles[nextIndex] && articles[nextIndex].image_url) {
@@ -58,11 +63,15 @@ function Recommendations( selectedTags ) {
         <div className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
       ) : currentArticle ? (
         <div className="h-full flex flex-col lg:flex-row items-center p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg ">
-          <img
+          {/* <Image
             src={currentArticle.image_url}
             alt={currentArticle.title}
+            height={200}
+            width={300}
             className="max-w-80 max-h-80 object-fill rounded-lg mr-8"
-          />
+          /> */}
+          <img src={currentArticle.image_url} alt={currentArticle.title} className="max-w-80 max-h-80 object-fill rounded-lg mr-8">
+          </img>
           <div className="flex-1">
             <h2 className="text-xl md:text-2xl lg:text-5xl mb-6 font-semibold dark:text-gray-100">
               {currentArticle.title}
@@ -108,7 +117,6 @@ function Recommendations( selectedTags ) {
           <IconCaretDownFilled />
         </button>
       </div>
-      {/* {nextImageLoading && <p className="mt-4">Loading next image...</p>} */}
     </div>
   );
 }
