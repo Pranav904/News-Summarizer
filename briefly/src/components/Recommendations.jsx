@@ -88,7 +88,7 @@ function Recommendations(selectedTags) {
             className="max-w-80 max-h-80 object-fill rounded-lg mr-8"
           ></img>
           <div className="flex-1">
-            <h2 className="mt-4 md:mt-0 text-xl md:text-2xl lg:text-5xl mb-6 font-semibold dark:text-gray-100">
+            <h2 className="mt-4 md:mt-0 text-justify text-xl md:text-2xl lg:text-5xl mb-6 font-semibold dark:text-gray-100">
               <Link href={currentArticle.url}> {currentArticle.title} </Link>
             </h2>
             <div className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -101,7 +101,7 @@ function Recommendations(selectedTags) {
                 ))}
             </div>
 
-            <p className="text-base 2xl:text-xl text-gray-700 dark:text-gray-300 mt-2">
+            <p className="text-justify text-base 2xl:text-xl text-gray-700 dark:text-gray-300 mt-2">
               {currentArticle.content}
             </p>
             <div className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
