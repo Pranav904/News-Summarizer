@@ -1,6 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { IconCaretUpFilled, IconCaretDownFilled } from "@tabler/icons-react";
+import Link from "next/link";
 import Tag from "./Tag";
+
+function formatDate(timestamp) {
+  const date = new Date(timestamp);
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${hours}:${minutes} | ${day}/${month}/${year}`;
+}
 
 function Recommendations(selectedTags) {
   const [articles, setArticles] = useState([]);
@@ -77,7 +89,7 @@ function Recommendations(selectedTags) {
           ></img>
           <div className="flex-1">
             <h2 className="text-xl md:text-2xl lg:text-5xl mb-6 font-semibold dark:text-gray-100">
-              {currentArticle.title}
+              <Link href={currentArticle.url}> {currentArticle.title} </Link>
             </h2>
             <div className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">
               Author: {currentArticle.author}
@@ -93,7 +105,7 @@ function Recommendations(selectedTags) {
               {currentArticle.content}
             </p>
             <div className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
-              Published: {currentArticle.published_date}
+              Published:  {formatDate(Date(Number(currentArticle.published_date))).toLocaleString()}
             </div>
           </div>
         </div>
