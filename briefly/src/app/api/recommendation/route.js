@@ -1,7 +1,7 @@
 // app/api/recommendation/route.js
 
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
-import { DynamoDBClient, GetItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { NextResponse } from 'next/server';
 
 // Initialize DynamoDB client
@@ -25,8 +25,6 @@ export const GET = withApiAuthRequired(async function handler(req) {
       console.log('Fetching recommendations for user:', userId);
       const preferredTags = tags || [];
 
-    //   console.log('Preferred tags:', preferredTags);
-
       if (preferredTags.length === 0) {
          return NextResponse.json({ articles: [] }, { status: 200 });
       }
@@ -38,8 +36,6 @@ export const GET = withApiAuthRequired(async function handler(req) {
          return acc;
       }, {});
 
-    //   console.log('Expression attribute values:', expressionAttributeValues);
-
       const articlesCommand = new ScanCommand({
          TableName: 'ArticleSummaries',
          FilterExpression: filterExpression,
@@ -50,7 +46,7 @@ export const GET = withApiAuthRequired(async function handler(req) {
 
       const articlesData = await dynamoDbClient.send(articlesCommand);
 
-    //   console.log('Recommended articles:', articlesData.Items);
+      console.log('Recommended articles:', articlesData.Items);
 
       // Format and return the articles
       const articles = articlesData.Items.map((item) => ({
@@ -60,12 +56,15 @@ export const GET = withApiAuthRequired(async function handler(req) {
          tags: item.tags.L ? item.tags.L.map((tag) => tag.S) : [],
          image_url: item.imageUrl.S,
          author: item.author.S,
+         published_date: item.publishDate.N,
+         url: item.url.S,
       }));
 
       return NextResponse.json({ 
          articles, 
          lastKey: articlesData.LastEvaluatedKey || null // Return LastEvaluatedKey for further pagination
       }, { status: 200 });
+      
    } catch (error) {
       console.error('Error fetching recommendations:', error);
       return NextResponse.json({ error: 'Error fetching recommendations' }, { status: 500 });
