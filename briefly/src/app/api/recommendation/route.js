@@ -46,7 +46,7 @@ export const GET = withApiAuthRequired(async function handler(req) {
 
       const articlesData = await dynamoDbClient.send(articlesCommand);
 
-      console.log('Recommended articles:', articlesData.Items);
+      // console.log('Recommended articles:', articlesData.Items);
 
       // Format and return the articles
       const articles = articlesData.Items.map((item) => ({
@@ -64,7 +64,7 @@ export const GET = withApiAuthRequired(async function handler(req) {
          articles, 
          lastKey: articlesData.LastEvaluatedKey || null // Return LastEvaluatedKey for further pagination
       }, { status: 200 });
-      
+
    } catch (error) {
       console.error('Error fetching recommendations:', error);
       return NextResponse.json({ error: 'Error fetching recommendations' }, { status: 500 });
