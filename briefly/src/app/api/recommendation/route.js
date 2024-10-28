@@ -46,8 +46,6 @@ export const GET = withApiAuthRequired(async function handler(req) {
 
       const articlesData = await dynamoDbClient.send(articlesCommand);
 
-      // console.log('Recommended articles:', articlesData.Items);
-
       // Format and return the articles
       const articles = articlesData.Items.map((item) => ({
          article_id: item.id.S,

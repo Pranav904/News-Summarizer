@@ -15,6 +15,8 @@ export const POST = withApiAuthRequired(async (req) => {
   const userId = session.user.sub; // User's unique identifier
   const { preferences } = await req.json(); // Expecting an array of preferences
 
+  console.log('Saving preferences for user:', userId, preferences);
+
   if (!Array.isArray(preferences)) {
     return new Response(JSON.stringify({ error: 'Preferences must be an array' }), { status: 400 });
   }
@@ -47,6 +49,8 @@ export const GET = withApiAuthRequired(async (req) => {
   }
 
   const userId = session.user.sub;
+
+  console.log('Fetching preferences for user:', userId);
 
   try {
     const params = {
