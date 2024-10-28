@@ -70,7 +70,7 @@ function Recommendations(selectedTags) {
   }, [currentIndex, articles]);
 
   return (
-    <div className="h-full container mx-auto p-6 flex items-center">
+    <div className="h-full container mx-auto p-6 flex flex-col sm:flex-row items-center">
       {loading && articles.length === 0 ? (
         <div className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
       ) : currentArticle ? (
@@ -88,7 +88,7 @@ function Recommendations(selectedTags) {
             className="max-w-80 max-h-80 object-fill rounded-lg mr-8"
           ></img>
           <div className="flex-1">
-            <h2 className="text-xl md:text-2xl lg:text-5xl mb-6 font-semibold dark:text-gray-100">
+            <h2 className="mt-4 md:mt-0 text-xl md:text-2xl lg:text-5xl mb-6 font-semibold dark:text-gray-100">
               <Link href={currentArticle.url}> {currentArticle.title} </Link>
             </h2>
             <div className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -115,18 +115,18 @@ function Recommendations(selectedTags) {
         </div>
       )}
 
-      <div className="flex flex-col ml-4">
+      <div className="flex flex-row sm:flex-col ml-4 mt-4 sm:mt-0">
         <button
           onClick={previousArticle}
           disabled={currentIndex === 0}
-          className="mb-2 px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded-full disabled:opacity-50"
+          className="-rotate-90 sm:rotate-0 sm:mb-2 px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded-full disabled:opacity-50"
         >
           <IconCaretUpFilled />
         </button>
         <button
           onClick={nextArticle}
           disabled={loading && currentIndex === articles.length - 1}
-          className="mt-2 px-4 py-2 bg-blue-500 dark:bg-blue-700 rounded-full disabled:opacity-50"
+          className="-rotate-90 sm:rotate-0 sm:mt-2 px-4 py-2 bg-blue-500 dark:bg-blue-700 rounded-full disabled:opacity-50"
         >
           <IconCaretDownFilled />
         </button>
