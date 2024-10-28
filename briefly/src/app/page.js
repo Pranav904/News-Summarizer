@@ -14,7 +14,7 @@ export default async function Home() {
   const user = session?.user || null;
 
   return (
-    <div className="h-screen w-full rounded-md flex md:items-center md:justify-center bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
+    <div className="h-screen w-full rounded-md flex items-center justify-center bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
       {user ? <NewsApp user={user} /> : <DefaultHome titleFont={alexBrush} />}
     </div>
   );
