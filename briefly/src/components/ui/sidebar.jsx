@@ -142,6 +142,7 @@ export const SidebarLink = ({ link, className, ...props }) => {
         className
       )}
       {...props}
+      onClick={link.onclick}
     >
       {link.icon}
       <motion.span
