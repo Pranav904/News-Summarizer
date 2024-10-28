@@ -5,6 +5,7 @@ import NewsCards from "./NewsCards";
 import { cn } from "@/app/lib/utils";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Loader from "./Loader";
 
 export default function NewsApp({ user }) {
   const [selectedTags, setSelectedTags] = useState([]);
@@ -34,8 +35,8 @@ export default function NewsApp({ user }) {
     if (user) fetchPreferences();
   }, [user, router]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className="h-screen flex items-center"><Loader /></div>;
+  if (error) return <div className="h-screen flex items-center">Error: {error}</div>;
 
   return (
     <div
