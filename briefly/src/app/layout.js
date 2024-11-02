@@ -1,6 +1,6 @@
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { ThemeProvider } from 'next-themes';
-import { Alex_Brush } from "@next/font/google";
+import { Alex_Brush } from "next/font/google";
 import "./globals.css";
 
 const alexBrush = Alex_Brush({

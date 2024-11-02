@@ -1,7 +1,7 @@
 import LogInSignUpButton from "./LogInSignUpButton";
 import { Spotlight } from "./ui/spotlight";
 
-export default function DefaultHome({ titleFont }) {
+export default function DefaultHome() {
   return (
     <div>
       <Spotlight

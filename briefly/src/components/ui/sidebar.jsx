@@ -1,9 +1,10 @@
 "use client";
+
 import { cn } from "@/app/lib/utils";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
-import { Alex_Brush } from "@next/font/google";
+import { Alex_Brush } from "next/font/google";
 
 const alexBrush = Alex_Brush({
   weight: "400",
@@ -90,7 +91,7 @@ export const MobileSidebar = ({ className, children, ...props }) => {
         <div className="flex justify-between z-20 w-full">
           <div>
           <h3
-            className={`${alexBrush.className} text-3xl pt-1 md:invisible font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50`}
+            className={`font-[family-name:var(--font-alex-brush)] text-3xl pt-1 md:invisible text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50`}
           >
             Briefly
           </h3>
