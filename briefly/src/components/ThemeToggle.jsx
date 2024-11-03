@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
-import { cn } from "@/app/lib/utils";
+import { cn } from "@/lib/utils";
 
 const ThemeToggle = () => {
   const { theme, setTheme } = useTheme();

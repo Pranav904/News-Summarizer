@@ -2,7 +2,7 @@
 
 import SidebarComponent from "./SideBar";
 import NewsCards from "./NewsCards";
-import { cn } from "@/app/lib/utils";
+import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Loader from "./Loader";
