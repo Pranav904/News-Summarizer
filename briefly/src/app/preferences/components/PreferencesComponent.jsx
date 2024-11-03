@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Loader from "@/components/Loader";
 
 const predefinedTags = [
   "World News", "Politics", "Economy", "Business", "Technology", 
@@ -60,16 +61,17 @@ const PreferencesComponent = ({ user }) => {
     }
   };
 
-  if (loading) return <div className="flex items-center justify-center p-8"><div className="animate-spin h-8 w-8 border-b-2"></div></div>;
+  if (loading) return <div className="h-screen flex items-center"><Loader /></div>;
 
   if (error) return <div className="max-w-md mx-auto p-4 rounded border">{error}</div>;
 
   return (
     <div className="max-w-2xl mx-auto p-6 rounded-lg shadow">
+      
       <div className="mb-6">
         <h2 className="text-2xl font-bold mb-2">{isEditing ? "Select Your Preferred Tags" : "Your Tag Preferences"}</h2>
         {!isEditing && (
-          <button onClick={() => setIsEditing(true)} className="btn-secondary">
+          <button onClick={() => setIsEditing(true)} className="inline-flex h-12 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
             Edit Preferences
           </button>
         )}
@@ -93,7 +95,7 @@ const PreferencesComponent = ({ user }) => {
 
       {isEditing && (
         <div className="flex justify-end gap-2">
-          <button onClick={handleSubmit} disabled={selectedTags.length === 0} className={`btn-primary ${selectedTags.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}>
+          <button onClick={handleSubmit} disabled={selectedTags.length === 0} className={`inline-flex h-12 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 ${selectedTags.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}>
             Save Preferences
           </button>
         </div>
