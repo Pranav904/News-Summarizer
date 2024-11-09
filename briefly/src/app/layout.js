@@ -4,6 +4,7 @@ import { Alex_Brush } from "next/font/google";
 import "./globals.css";
 
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
 
 const alexBrush = Alex_Brush({
   weight: "400",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }) {
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             {children}
             <SpeedInsights />
+            <Analytics />
           </ThemeProvider>
         </UserProvider>
       </body>
