@@ -70,11 +70,11 @@ function Recommendations(selectedTags) {
   }, [currentIndex, articles]);
 
   return (
-    <div className="h-full container mx-auto p-6 flex flex-col sm:flex-row items-center">
+    <div className="h-screen container mx-auto p-6 flex flex-col sm:flex-row items-center">
       {loading && articles.length === 0 ? (
         <div className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
       ) : currentArticle ? (
-        <div className="h-full flex flex-col lg:flex-row items-center p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg ">
+        <div className="flex flex-col lg:flex-row items-center p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg ">
           {/* <Image
             src={currentArticle.image_url}
             alt={currentArticle.title}
