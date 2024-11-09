@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "./ui/sidebar";
 import {
   IconArrowLeft,
-  IconBrandTabler,
+  IconNews,
   IconUserBolt,
   IconSun,
   IconPencil,
@@ -15,7 +15,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 
 export default function SidebarComponent({ userProfile }) {
-  
   const { theme, setTheme } = useTheme();
 
   function toggleTheme() {
@@ -27,10 +26,10 @@ export default function SidebarComponent({ userProfile }) {
 
   const links = [
     {
-      label: "Dashboard",
+      label: "Home",
       href: "/",
       icon: (
-        <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconNews className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
