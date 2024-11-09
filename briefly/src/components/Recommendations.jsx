@@ -110,8 +110,8 @@ function Recommendations(selectedTags) {
           </div>
         </div>
       ) : (
-        <div className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse">
-          <p>No more articles available.</p>
+        <div className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse flex items-center justify-center">
+          <p>No articles available! Ping Me !!</p>
         </div>
       )}
 
