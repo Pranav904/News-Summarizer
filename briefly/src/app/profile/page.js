@@ -4,11 +4,14 @@ import { getSession } from "@auth0/nextjs-auth0";
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import EditPreferencesButton from "@/components/EditPreferencesButton";
 
 export default async function ProfilePage() {
   const session = await getSession();
   const user = session?.user || null;
+
+  if (!session?.user) {
+    return <div>You must be logged in to view this page.</div>;
+  }
 
   return (
     <div
@@ -38,7 +41,6 @@ export default async function ProfilePage() {
               <Input id="email" placeholder={user.email} type="email" />
             </LabelInputContainer>
             <div className="flex flex-col items-center mt-8">
-              <EditPreferencesButton />
             </div>
           </div>
         </div>
