@@ -3,8 +3,9 @@ import os
 import boto3
 import google.generativeai as genai
 from datetime import datetime
-import uuid
 import logging
+from hashlib import sha256
+from botocore.exceptions import ClientError  # Correct import for ClientError
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -29,10 +30,14 @@ model = genai.GenerativeModel(
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('ArticleSummaries')
 
+
+def generate_article_id(url):
+    """Generate a unique, consistent article ID based on the article URL."""
+    return sha256(url.encode('utf-8')).hexdigest()  # Use SHA-256 to hash the URL
+
+
 def lambda_handler(event, context):
-    
     """Main Lambda Handler to process SQS messages and summarize articles"""
-    
     records_to_write = []
     
     for record in event['Records']:
@@ -56,7 +61,7 @@ def lambda_handler(event, context):
             
             # Prepare item for DynamoDB
             item = {
-                'id': str(uuid.uuid4()),
+                'id': generate_article_id(article_url),  # Generate ID based on URL
                 'messageReceivedTimestamp': int(record['attributes']['SentTimestamp']),
                 'messageProcessedTimestamp': int(datetime.now().timestamp() * 1000),
                 'url': article_url,
@@ -82,10 +87,9 @@ def lambda_handler(event, context):
     if records_to_write:
         write_to_dynamodb(records_to_write)
 
+
 def summarize_article(url):
-    
     """Summarize the article using Google Generative AI"""
-    
     prompt = [
       "Summarize the given news article by accessing the given link in under 150 words. Select relevant tags from: World News, Politics, Economy, Business, Technology, Health, Environment, Science, Education, Sports, Entertainment, Culture, Lifestyle, Travel, Crime, Opinion, Social Issues, Innovation, Human Rights, Weather.",
       url
@@ -102,11 +106,21 @@ def summarize_article(url):
         logger.error(f"Failed to summarize article at {url}: {str(e)}")
         return "Unable to generate summary", []
 
+
 def write_to_dynamodb(items):
-    
-    """Batch write items to DynamoDB table"""
-    
+    """Batch write items to DynamoDB table with conditional uniqueness check."""
     with table.batch_writer() as batch:
         for item in items:
-            batch.put_item(Item=item)
-    logger.info(f"Successfully wrote {len(items)} items to DynamoDB")
+            try:
+                table.put_item(
+                    Item=item,
+                    ConditionExpression="attribute_not_exists(id)"  # Ensure item is unique by id
+                )
+            except ClientError as e:
+                # Handle duplicate error, log and continue
+                if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+                    logger.warning(f"Duplicate article detected, skipping: {item['url']}")
+                else:
+                    raise e  # Raise other exceptions as needed
+
+    logger.info(f"Successfully wrote unique items to DynamoDB")
