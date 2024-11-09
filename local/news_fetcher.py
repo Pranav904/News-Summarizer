@@ -58,7 +58,7 @@ def fetch_news(tag):
 
     return articles[:BATCH_SIZE]  # Return only up to BATCH_SIZE articles
 
-def push_to_sqs(articles):
+def push_to_sqs(articles, tag):
     sqs = boto3.client('sqs', 
                        aws_access_key_id=AWS_ACCESS_KEY,
                        aws_secret_access_key=AWS_SECRET_KEY,
@@ -73,16 +73,16 @@ def push_to_sqs(articles):
         )
         processed_articles.add(article['url'])  # Mark article as processed
 
-    print(f"Pushed {len(new_articles)} new articles to SQS for tag.")
+    print(f"Pushed {len(new_articles)} new articles to SQS for tag {tag}.")
 
 def job():
     for tag in TAGS:
         articles = fetch_news(tag)
-        push_to_sqs(articles)
+        push_to_sqs(articles, tag)
         time.sleep(90)  # Wait for 90 seconds before processing the next tag
 
 # Schedule the job to run every 15 minutes
-schedule.every(45).minutes.do(job)
+schedule.every(5).minutes.do(job)
 
 if __name__ == "__main__":
     while True:
