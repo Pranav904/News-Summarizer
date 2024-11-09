@@ -70,11 +70,11 @@ function Recommendations(selectedTags) {
   }, [currentIndex, articles]);
 
   return (
-    <div className="h-screen container mx-auto p-6 flex flex-col sm:flex-row items-center">
+    <div className="lg:h-full container p-6 flex flex-col sm:flex-row items-center">
       {loading && articles.length === 0 ? (
         <div className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
       ) : currentArticle ? (
-        <div className="flex flex-col lg:flex-row items-center p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg ">
+        <div className="lg:h-full flex flex-col lg:flex-row items-center p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg ">
           {/* <Image
             src={currentArticle.image_url}
             alt={currentArticle.title}
@@ -82,12 +82,14 @@ function Recommendations(selectedTags) {
             width={300}
             className="max-w-80 max-h-80 object-fill rounded-lg mr-8"
           /> */}
+          <div className="w-full lg:h-full lg:w-fit">
           <img
             src={currentArticle.image_url}
             alt={currentArticle.title}
-            className="max-w-80 max-h-80 object-fill rounded-lg mr-8"
+            className="w-full lg:max-w-80 lg:h-full object-cover rounded-lg lg:mr-8"
           ></img>
-          <div className="flex-1">
+          </div>
+          <div className="flex-1 md:pr-2">
             <h2 className="mt-4 lg:mt-0 text-justify text-xl md:text-2xl lg:text-5xl mb-6 font-semibold dark:text-gray-100">
               <Link href={currentArticle.url}> {currentArticle.title} </Link>
             </h2>
