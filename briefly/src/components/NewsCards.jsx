@@ -2,19 +2,18 @@ import Recommendations from "./Recommendations";
 
 export default function NewsCards({ selectedTags }) {
   return (
-    <div className="flex flex-1 overflow-y-auto ">
-      <div className="p-2 md:p-10 rounded-l-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
-        <div className="flex justify-between hidden sm:block">
-          <h1
-            className={`font-[family-name:var(--font-alex-brush)] text-5xl text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50`}
-          >
-            Briefly
-          </h1>
-          {/* <p className={`${alexBrush.className} invisible text-2xl sm:visible`}>Welcome !</p> */}
-          {/* <ThemeToggle /> */}
+    <div className="p-2 md:p-10 rounded-t-2xl md:rounded-l-2xl w-full flex flex-col gap-2 flex-1 dark:bg-black bg-white dark:bg-grid-white/[0.1] bg-grid-black/[0.1] relative overflow-y-auto">
+      {/* <div className="rounded-l-2xl absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div> */}
+      <div className="h-screen flex flex-col overflow-y-auto">
+          <div className="flex justify-between hidden sm:block">
+            <h1
+              className={`font-[family-name:var(--font-alex-brush)] text-5xl text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50`}
+            >
+              Briefly
+            </h1>
+          </div>
+          <Recommendations selectedTags={selectedTags} />
         </div>
-        <Recommendations selectedTags={selectedTags} />
-      </div>
     </div>
   );
 }
