@@ -7,6 +7,7 @@ import {
   IconBrandTabler,
   IconUserBolt,
   IconSun,
+  IconPencil,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
@@ -37,6 +38,13 @@ export default function SidebarComponent({ userProfile }) {
       href: "/profile",
       icon: (
         <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
+      label: "Edit Preferences",
+      href: "/preferences",
+      icon: (
+        <IconPencil className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
