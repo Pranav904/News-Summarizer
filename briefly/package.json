@@ -13,6 +13,7 @@
     "@aws-sdk/client-dynamodb": "^3.677.0",
     "@radix-ui/react-label": "^2.1.0",
     "@tabler/icons-react": "^3.21.0",
+    "@vercel/speed-insights": "^1.1.0",
     "aws-sdk": "^2.1691.0",
     "briefly": "file:",
     "class-variance-authority": "^0.7.0",

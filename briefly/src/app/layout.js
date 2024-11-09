@@ -3,6 +3,8 @@ import { ThemeProvider } from 'next-themes';
 import { Alex_Brush } from "next/font/google";
 import "./globals.css";
 
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
 const alexBrush = Alex_Brush({
   weight: "400",
   variable: "--font-alex-brush",
@@ -23,6 +25,7 @@ export default function RootLayout({ children }) {
         <UserProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             {children}
+            <SpeedInsights />
           </ThemeProvider>
         </UserProvider>
       </body>
