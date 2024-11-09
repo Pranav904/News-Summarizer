@@ -9,14 +9,14 @@ const dynamoDbClient = new DynamoDBClient({ region: 'us-east-1' });
 
 export const GET = withApiAuthRequired(async function handler(req) {
    const session = await getSession(req);
-   
+
    if (!session || !session.user) {
       return NextResponse.json({ error: 'User is not authenticated' }, { status: 401 });
    }
 
    const userId = session.user.sub;
 
-   // Extract lastKey from query parameters (for pagination)
+   // Extract lastKey and tags from query parameters (for pagination and tag preferences)
    const { searchParams } = new URL(req.url);
    const lastKey = searchParams.get('lastKey') ? JSON.parse(searchParams.get('lastKey')) : undefined;
    const tags = searchParams.get('tags') ? JSON.parse(searchParams.get('tags')) : undefined;
@@ -29,7 +29,7 @@ export const GET = withApiAuthRequired(async function handler(req) {
          return NextResponse.json({ articles: [] }, { status: 200 });
       }
 
-      // Construct filter expression and fetch recommended articles based on user tags
+      // Construct the filter expression for DynamoDB scan based on user preferred tags
       const filterExpression = preferredTags.map((_, idx) => `contains(tags, :tag${idx})`).join(' OR ');
       const expressionAttributeValues = preferredTags.reduce((acc, tag, idx) => {
          acc[`:tag${idx}`] = { S: tag };
@@ -41,26 +41,39 @@ export const GET = withApiAuthRequired(async function handler(req) {
          FilterExpression: filterExpression,
          ExpressionAttributeValues: expressionAttributeValues,
          Limit: 10,
-         ExclusiveStartKey: lastKey, // Use the last evaluated key for pagination
+         ExclusiveStartKey: lastKey, // Pagination
       });
 
       const articlesData = await dynamoDbClient.send(articlesCommand);
 
-      // Format and return the articles
-      const articles = articlesData.Items.map((item) => ({
-         article_id: item.id.S,
-         title: item.title.S,
-         content: item.summary.S,
-         tags: item.tags.L ? item.tags.L.map((tag) => tag.S) : [],
-         image_url: item.imageUrl.S,
-         author: item.author.S,
-         published_date: item.publishDate.N,
-         url: item.url.S,
-      }));
+      // Format and filter articles to remove irrelevant tags
+      const uniqueArticles = new Map(); // Use a map to filter out duplicates by article_id
+
+      articlesData.Items.forEach((item) => {
+         const articleId = item.id.S;
+
+         if (!uniqueArticles.has(articleId)) {
+            // Filter tags to include only those in the user's preferredTags
+            const filteredTags = item.tags.L
+               ? item.tags.L.map((tag) => tag.S).filter((tag) => preferredTags.includes(tag))
+               : [];
+
+            uniqueArticles.set(articleId, {
+               article_id: articleId,
+               title: item.title.S,
+               content: item.summary.S,
+               tags: filteredTags, // Only include preferred tags
+               image_url: item.imageUrl.S,
+               author: item.author.S,
+               published_date: item.publishDate.N,
+               url: item.url.S,
+            });
+         }
+      });
 
       return NextResponse.json({ 
-         articles, 
-         lastKey: articlesData.LastEvaluatedKey || null // Return LastEvaluatedKey for further pagination
+         articles: Array.from(uniqueArticles.values()), // Convert map to array
+         lastKey: articlesData.LastEvaluatedKey || null, // Return LastEvaluatedKey for pagination
       }, { status: 200 });
 
    } catch (error) {
