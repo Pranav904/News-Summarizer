@@ -4,12 +4,6 @@ import { cn } from "@/lib/utils";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
-import { Alex_Brush } from "next/font/google";
-
-const alexBrush = Alex_Brush({
-  weight: "400",
-  subsets: ["latin"],
-});
 
 const SidebarContext = createContext(undefined);
 
@@ -90,17 +84,17 @@ export const MobileSidebar = ({ className, children, ...props }) => {
       >
         <div className="flex justify-between z-20 w-full">
           <div>
-          <h3
-            className={`font-[family-name:var(--font-alex-brush)] text-3xl pt-1 md:invisible text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50`}
-          >
-            Briefly
-          </h3>
+            <h3
+              className={`font-[family-name:var(--font-alex-brush)] text-3xl pt-1 md:invisible text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50`}
+            >
+              Briefly
+            </h3>
           </div>
           <div className="flex items-center">
-          <IconMenu2
-            className="text-neutral-800 dark:text-neutral-200"
-            onClick={() => setOpen(!open)}
-          />
+            <IconMenu2
+              className="text-neutral-800 dark:text-neutral-200"
+              onClick={() => setOpen(!open)}
+            />
           </div>
         </div>
         <AnimatePresence>
