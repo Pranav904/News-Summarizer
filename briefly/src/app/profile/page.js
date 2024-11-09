@@ -23,6 +23,7 @@ export default async function ProfilePage() {
         <div className="flex flex-col items-center">
           <Image
             src={user.picture}
+            alt="Profile Picture"
             height={150}
             width={150}
             className="rounded-full"
