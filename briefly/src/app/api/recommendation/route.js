@@ -71,9 +71,12 @@ export const GET = withApiAuthRequired(async function handler(req) {
          }
       });
 
+      // Convert map to array, randomize order, and return response
+      const randomizedArticles = Array.from(uniqueArticles.values()).sort(() => Math.random() - 0.5);
+
       return NextResponse.json({ 
-         articles: Array.from(uniqueArticles.values()), // Convert map to array
-         lastKey: articlesData.LastEvaluatedKey || null, // Return LastEvaluatedKey for pagination
+         articles: randomizedArticles, // Return articles in random order
+         lastKey: articlesData.LastEvaluatedKey || null, // Pagination key
       }, { status: 200 });
 
    } catch (error) {
