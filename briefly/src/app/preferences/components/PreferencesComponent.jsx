@@ -61,8 +61,6 @@ const PreferencesComponent = ({ user }) => {
     }
   };
 
-  if (loading) return <div className="h-screen flex items-center"><Loader /></div>;
-
   if (error) return <div className="max-w-md mx-auto p-4 rounded border">{error}</div>;
 
   return (
@@ -71,7 +69,7 @@ const PreferencesComponent = ({ user }) => {
       <div className="mb-6">
         <h2 className="text-2xl font-bold mb-2">{isEditing ? "Select Your Preferred Tags" : "Your Tag Preferences"}</h2>
         {!isEditing && (
-          <button onClick={() => setIsEditing(true)} className="inline-flex h-12 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
+          <button onClick={() => setIsEditing(true)} className= {`shadow-[0_4px_14px_0_rgb(0,0,0,10%)] hover:shadow-[0_6px_20px_rgba(93,93,93,23%)] px-8 py-2 bg-[#000] dark:bg-[#fff] rounded-md text-white dark:text-black font-bold transition duration-200 ease-linear transform hover:-translate-y-1 transition duration-400" ${selectedTags.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}>
             Edit Preferences
           </button>
         )}
@@ -95,7 +93,7 @@ const PreferencesComponent = ({ user }) => {
 
       {isEditing && (
         <div className="flex justify-end gap-2">
-          <button onClick={handleSubmit} disabled={selectedTags.length === 0} className={`inline-flex h-12 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 ${selectedTags.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}>
+          <button onClick={handleSubmit} disabled={selectedTags.length === 0} className= {`shadow-[0_4px_14px_0_rgb(0,0,0,10%)] hover:shadow-[0_6px_20px_rgba(93,93,93,23%)] px-8 py-2 bg-[#000] dark:bg-[#fff] rounded-md text-white dark:text-black font-bold transition duration-200 ease-linear transform hover:-translate-y-1 transition duration-400" ${selectedTags.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}>
             Save Preferences
           </button>
         </div>
