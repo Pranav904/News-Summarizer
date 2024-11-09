@@ -103,7 +103,7 @@ function Recommendations(selectedTags) {
                 ))}
             </div>
 
-            <p className="text-justify text-base 2xl:text-xl text-gray-700 dark:text-gray-300 mt-2">
+            <p className="text-justify text-base xl:text-lg text-gray-700 dark:text-gray-300 mt-2">
               {currentArticle.content}
             </p>
             <div className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
