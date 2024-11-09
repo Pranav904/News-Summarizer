@@ -4,7 +4,7 @@ import Link from "next/link";
 import Tag from "./Tag";
 
 function formatDate(timestamp) {
-  const date = new Date(timestamp);
+  const date = new Date(parseInt(timestamp));
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -107,7 +107,7 @@ function Recommendations(selectedTags) {
               {currentArticle.content}
             </p>
             <div className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
-              Published:  {formatDate(Date(Number(currentArticle.published_date))).toLocaleString()}
+              Published:  {formatDate(currentArticle.published_date)}
             </div>
           </div>
         </div>
