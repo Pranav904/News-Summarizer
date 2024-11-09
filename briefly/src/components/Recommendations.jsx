@@ -5,10 +5,10 @@ import Tag from "./Tag";
 
 function formatDate(timestamp) {
   const date = new Date(parseInt(timestamp));
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
 
   return `${hours}:${minutes} | ${day}/${month}/${year}`;
@@ -83,11 +83,11 @@ function Recommendations(selectedTags) {
             className="max-w-80 max-h-80 object-fill rounded-lg mr-8"
           /> */}
           <div className="w-full lg:h-full lg:w-fit">
-          <img
-            src={currentArticle.image_url}
-            alt={currentArticle.title}
-            className="w-full lg:max-w-80 lg:h-full object-cover rounded-lg lg:mr-8"
-          ></img>
+            <img
+              src={currentArticle.image_url}
+              alt={currentArticle.title}
+              className="w-full lg:max-w-80 lg:h-full object-cover rounded-lg lg:mr-8"
+            ></img>
           </div>
           <div className="flex-1 md:pr-2">
             <h2 className="mt-4 lg:mt-0 text-justify text-xl md:text-2xl lg:text-5xl mb-6 font-semibold dark:text-gray-100">
@@ -107,7 +107,7 @@ function Recommendations(selectedTags) {
               {currentArticle.content}
             </p>
             <div className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
-              Published:  {formatDate(currentArticle.published_date)}
+              Published: {formatDate(currentArticle.published_date)}
             </div>
           </div>
         </div>

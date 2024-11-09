@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import SidebarComponent from "./SideBar";
 import NewsCards from "./NewsCards";
@@ -16,7 +16,7 @@ export default function NewsApp({ user }) {
   useEffect(() => {
     const fetchPreferences = async () => {
       try {
-        const response = await fetch('/api/preferences');
+        const response = await fetch("/api/preferences");
         if (!response.ok) throw new Error("Failed to fetch preferences");
         const data = await response.json();
 
@@ -35,8 +35,14 @@ export default function NewsApp({ user }) {
     if (user) fetchPreferences();
   }, [user, router]);
 
-  if (loading) return <div className="h-screen flex items-center"><Loader /></div>;
-  if (error) return <div className="h-screen flex items-center">Error: {error}</div>;
+  if (loading)
+    return (
+      <div className="h-screen flex items-center">
+        <Loader />
+      </div>
+    );
+  if (error)
+    return <div className="h-screen flex items-center">Error: {error}</div>;
 
   return (
     <div

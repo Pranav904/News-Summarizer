@@ -1,5 +1,5 @@
 // Input component extends from shadcnui - https://ui.shadcn.com/docs/components/input
-"use client";;
+"use client";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useMotionTemplate, useMotionValue, motion } from "framer-motion";
@@ -11,18 +11,14 @@ const Input = React.forwardRef(({ className, type, ...props }, ref) => {
   let mouseX = useMotionValue(0);
   let mouseY = useMotionValue(0);
 
-  function handleMouseMove({
-    currentTarget,
-    clientX,
-    clientY
-  }) {
+  function handleMouseMove({ currentTarget, clientX, clientY }) {
     let { left, top } = currentTarget.getBoundingClientRect();
 
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
   }
   return (
-    (<motion.div
+    <motion.div
       style={{
         background: useMotionTemplate`
       radial-gradient(
@@ -35,7 +31,8 @@ const Input = React.forwardRef(({ className, type, ...props }, ref) => {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
-      className="p-[2px] rounded-lg transition duration-300 group/input">
+      className="p-[2px] rounded-lg transition duration-300 group/input"
+    >
       <input
         type={type}
         className={cn(
@@ -49,8 +46,9 @@ const Input = React.forwardRef(({ className, type, ...props }, ref) => {
           className
         )}
         ref={ref}
-        {...props} />
-    </motion.div>)
+        {...props}
+      />
+    </motion.div>
   );
 });
 Input.displayName = "Input";
