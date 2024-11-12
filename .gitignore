@@ -1,5 +1,5 @@
 # Ignore Python Virtual Environment
-local/news-fetch
+local/cron_env
 venv/
 env/
 
