@@ -33,4 +33,4 @@ jobs:
       - name: Run the script
         run: |
           cd local
-          python your_script.py
+          python news_fetcher.py
