@@ -1,0 +1,36 @@
+name: Fetch News Job
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # Runs every 5 minutes
+  workflow_dispatch:  # Allows manual trigger from GitHub Actions UI
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          cd local
+          pip install -r requirements.txt
+
+      - name: Set up environment variables
+        run: |
+          echo "NEWS_API_KEY=${{ secrets.NEWS_API_KEY }}" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+          echo "SQS_QUEUE_URL=${{ secrets.SQS_QUEUE_URL }}" >> $GITHUB_ENV
+
+      - name: Run the script
+        run: |
+          cd local
+          python your_script.py
