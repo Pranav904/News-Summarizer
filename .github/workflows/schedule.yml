@@ -2,16 +2,16 @@ name: Fetch News Job
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  # Runs every 10 minutes
-  workflow_dispatch:  # Allows manual trigger from GitHub Actions UI
+    - cron: '0 */8 * * *'  # Runs every 8 hours (00:00, 08:00, 16:00 UTC)
+  workflow_dispatch:  # Allows manual trigger
 
 jobs:
-  run-script:
+  fetch-news:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -19,18 +19,82 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd local
-          pip install -r requirements.txt
+          pip install requests boto3 python-dotenv
 
-      - name: Set up environment variables
+      - name: Fetch and Push News to SQS
+        env:
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SQS_QUEUE_URL: ${{ secrets.SQS_QUEUE_URL }}
         run: |
-          echo "NEWS_API_KEY=${{ secrets.NEWS_API_KEY }}" >> $GITHUB_ENV
-          echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
-          echo "SQS_QUEUE_URL=${{ secrets.SQS_QUEUE_URL }}" >> $GITHUB_ENV
+          import os
+          import requests
+          import boto3
+          import json
+          import time
+          import urllib.parse
 
-      - name: Run the script
-        run: |
-          cd local
-          python news_fetcher.py
+          # Environment variables
+          NEWS_API_KEY = os.getenv('NEWS_API_KEY')
+          AWS_REGION = os.getenv('AWS_REGION')
+          SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
+
+          TAGS = [
+              "World News", "Politics", "Economy", "Business", "Technology", 
+              "Health", "Environment", "Science", "Education", "Sports",
+              "Entertainment", "Culture", "Lifestyle", "Travel", "Crime", 
+              "Opinion", "Social Issues", "Innovation", "Human Rights", "Weather"
+          ]
+          
+          BATCH_SIZE = 20
+          processed_articles = set()
+
+          def fetch_news(tag):
+              articles = []
+              page = 1
+              while len(articles) < BATCH_SIZE:
+                  url = f'https://newsapi.org/v2/everything'
+                  params = {
+                      'q': urllib.parse.quote(tag),
+                      'language': 'en',
+                      'sortBy': 'publishedAt',
+                      'pageSize': BATCH_SIZE,
+                      'page': page,
+                      'apiKey': NEWS_API_KEY
+                  }
+                  
+                  response = requests.get(url, params=params)
+                  if response.status_code != 200:
+                      print(f"Error fetching news for tag '{tag}':", response.json())
+                      break
+                  
+                  data = response.json()
+                  articles.extend(data.get('articles', []))
+                  total_results = data.get('totalResults', 0)
+                  
+                  if len(articles) >= total_results or len(articles) >= BATCH_SIZE:
+                      break
+                  
+                  page += 1
+
+              return articles[:BATCH_SIZE]
+
+          def push_to_sqs(articles, tag):
+              sqs = boto3.client('sqs', region_name=AWS_REGION)
+              new_articles = [article for article in articles if article['url'] not in processed_articles]
+
+              for article in new_articles:
+                  sqs.send_message(
+                      QueueUrl=SQS_QUEUE_URL,
+                      MessageBody=json.dumps(article)
+                  )
+                  processed_articles.add(article['url'])
+
+              print(f"Pushed {len(new_articles)} new articles to SQS for tag {tag}.")
+
+          for tag in TAGS:
+              articles = fetch_news(tag)
+              push_to_sqs(articles, tag)
+              time.sleep(90)  # Prevent hitting API rate limits
