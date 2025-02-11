@@ -33,4 +33,7 @@ jobs:
         run: |
           set -x  # Debug mode
           cd local
+          python -c "import os; print('NEWS_API_KEY:', bool(os.getenv('NEWS_API_KEY')))"
+          ls -lah
+          python news_fetcher.py
           python news_fetcher.py
