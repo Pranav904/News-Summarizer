@@ -12,8 +12,8 @@ load_dotenv()
 
 # Fetch secrets properly
 NEWS_API_KEY = os.getenv('NEWS_API_KEY')
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')  # Fixed name
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')  # Fixed name
+AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')  # Fixed name
+AWS_SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')  # Fixed name
 AWS_REGION = os.getenv('AWS_REGION')
 SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 
