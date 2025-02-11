@@ -8,19 +8,20 @@ on:
 jobs:
   fetch-news:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.10
-
+          python-version: '3.10'
       - name: Install dependencies
         run: |
-          cd local
-          pip install -r requirements.txt
+          set -x  # Debug mode (shows each command)
+          python -m pip install --upgrade pip
+          pip install -r local/requirements.txt --verbose  # Ensure path is correct
 
       - name: Run News Fetch Script
         env:
@@ -30,5 +31,6 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           SQS_QUEUE_URL: ${{ secrets.SQS_QUEUE_URL }}
         run: |
+          set -x  # Debug mode
           cd local
           python news_fetcher.py
