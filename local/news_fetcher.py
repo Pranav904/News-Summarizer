@@ -111,9 +111,9 @@ def main():
 
     for tag in TAGS:
         print(f"🔍 Fetching articles for: {tag}")
-        articles = fetch_news(tag)
-        push_to_sqs(articles, tag)
-        time.sleep(60)
+        # articles = fetch_news(tag)
+        # push_to_sqs(articles, tag)
+        # time.sleep(2)
 
     print("🎉 News fetch job completed!")
 
