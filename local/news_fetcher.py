@@ -17,16 +17,8 @@ AWS_SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')  # Fixed name
 AWS_REGION = os.getenv('AWS_REGION')
 SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 
-# Debugging: Print variables (excluding secrets)
-print("🔍 Debugging Environment Variables:")
-print(f"NEWS_API_KEY: {'SET' if NEWS_API_KEY else 'MISSING'}")
-print(f"AWS_ACCESS_KEY_ID: {'SET' if AWS_ACCESS_KEY else 'MISSING'}")
-print(f"AWS_SECRET_ACCESS_KEY: {'SET' if AWS_SECRET_KEY else 'MISSING'}")
-print(f"AWS_REGION: {'SET' if AWS_REGION else 'MISSING'}")
-print(f"SQS_QUEUE_URL: {'SET' if SQS_QUEUE_URL else 'MISSING'}")
-
 # Validate required environment variables
-missing_vars = [var for var in ["NEWS_API_KEY", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION", "SQS_QUEUE_URL"] if not globals()[var]]
+missing_vars = [var for var in ["NEWS_API_KEY", "AWS_ACCESS_KEY", "AWS_SECRET_KEY", "AWS_REGION", "SQS_QUEUE_URL"] if not globals()[var]]
 if missing_vars:
     print(f"❌ Missing required environment variables: {', '.join(missing_vars)}")
     sys.exit(1)  # Stop execution if secrets are missing
