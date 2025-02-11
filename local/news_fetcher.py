@@ -33,6 +33,12 @@ if missing_vars:
 
 print("✅ All required environment variables are set.")
 
+TAGS = [
+    "WorldNews", "Politics", "Economy", "Business", "Technology", 
+    "Health", "Environment", "Science", "Education", "Sports",
+    "Entertainment", "Culture", "Lifestyle", "Travel", "Crime", 
+    "Opinion", "SocialIssues", "Innovation", "HumanRights", "Weather"
+]
 
 def fetch_news(tag):
     """Fetches news articles for a given tag using NewsAPI."""
