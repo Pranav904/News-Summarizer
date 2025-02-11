@@ -40,6 +40,9 @@ TAGS = [
     "Opinion", "SocialIssues", "Innovation", "HumanRights", "Weather"
 ]
 
+BATCH_SIZE = 20  # Number of articles to send to SQS for each tag
+processed_articles = set()  # To track processed article URLs
+
 def fetch_news(tag):
     """Fetches news articles for a given tag using NewsAPI."""
     articles = []
