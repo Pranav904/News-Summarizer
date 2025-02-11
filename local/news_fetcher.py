@@ -18,10 +18,10 @@ SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 
 # List of tags to fetch articles for
 TAGS = [
-    "World News", "Politics", "Economy", "Business", "Technology", 
+    "WorldNews", "Politics", "Economy", "Business", "Technology", 
     "Health", "Environment", "Science", "Education", "Sports",
     "Entertainment", "Culture", "Lifestyle", "Travel", "Crime", 
-    "Opinion", "Social Issues", "Innovation", "Human Rights", "Weather"
+    "Opinion", "SocialIssues", "Innovation", "HumanRights", "Weather"
 ]
 
 BATCH_SIZE = 20  # Number of articles to send to SQS for each tag
