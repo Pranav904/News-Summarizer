@@ -1,8 +1,8 @@
-name: Fetch News and Push to SQS
+name: Fetch News and Push to SQS Job
 
 on:
   schedule:
-    - cron: "0 */8 * * *"  # Run every 8 hours
+    - cron: "0 */8 * * *"
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
@@ -19,9 +19,9 @@ jobs:
           python-version: '3.10'
       - name: Install dependencies
         run: |
-          set -x  # Debug mode (shows each command)
+          set -x  # Debug mode
           python -m pip install --upgrade pip
-          pip install -r local/requirements.txt --verbose  # Ensure path is correct
+          pip install -r local/requirements.txt --verbose
 
       - name: Run News Fetch Script
         env:
@@ -33,7 +33,4 @@ jobs:
         run: |
           set -x  # Debug mode
           cd local
-          python -c "import os; print('NEWS_API_KEY:', bool(os.getenv('NEWS_API_KEY')))"
-          ls -lah
-          python news_fetcher.py
           python news_fetcher.py
