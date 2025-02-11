@@ -109,12 +109,12 @@ def main():
     """Main function to fetch news and push to SQS."""
     print("🚀 Starting news fetch job...")
 
-    for tag in TAGS:
+    for tag in TAGS[:5]:
         print(f"🔍 Fetching articles for: {tag}")
         # articles = fetch_news(tag)
         # push_to_sqs(articles, tag)
-        # time.sleep(2)
-
+        time.sleep(5)
+    articles = fetch_news(TAGS[0])
     print("🎉 News fetch job completed!")
 
 if __name__ == "__main__":
