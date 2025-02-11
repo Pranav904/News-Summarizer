@@ -6,17 +6,16 @@ import time
 import urllib.parse
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
-# Environment Variables from GitHub Actions Secrets
+# Fetch environment variables
 NEWS_API_KEY = os.getenv('NEWS_API_KEY')
 AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_REGION = os.getenv('AWS_REGION')
 SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 
-# List of tags to fetch articles for
+# List of news tags
 TAGS = [
     "WorldNews", "Politics", "Economy", "Business", "Technology", 
     "Health", "Environment", "Science", "Education", "Sports",
@@ -24,8 +23,13 @@ TAGS = [
     "Opinion", "SocialIssues", "Innovation", "HumanRights", "Weather"
 ]
 
-BATCH_SIZE = 20  # Number of articles to send to SQS for each tag
-processed_articles = set()  # To track processed article URLs
+BATCH_SIZE = 20  # Number of articles per tag
+processed_articles = set()  # Track processed article URLs
+
+# Validate environment variables
+missing_vars = [var for var in ["NEWS_API_KEY", "AWS_ACCESS_KEY", "AWS_SECRET_KEY", "AWS_REGION", "SQS_QUEUE_URL"] if not locals()[var]]
+if missing_vars:
+    raise RuntimeError(f"🚨 Missing environment variables: {', '.join(missing_vars)}")
 
 def fetch_news(tag):
     """Fetches news articles for a given tag using NewsAPI."""
@@ -35,7 +39,7 @@ def fetch_news(tag):
     while len(articles) < BATCH_SIZE:
         url = "https://newsapi.org/v2/everything"
         params = {
-            "q": urllib.parse.quote(tag),
+            "q": tag,
             "language": "en",
             "sortBy": "publishedAt",
             "pageSize": BATCH_SIZE,
@@ -44,19 +48,17 @@ def fetch_news(tag):
         }
 
         try:
-            response = requests.get(url, params=params)
-            response.raise_for_status()  # Raise HTTPError for bad responses
-
+            response = requests.get(url, params=params, timeout=15)  # Timeout added
+            response.raise_for_status()
             data = response.json()
+
             if "articles" not in data:
                 print(f"⚠️ No articles found for tag: {tag}")
                 break
 
             articles.extend(data["articles"])
-            total_results = data.get("totalResults", 0)
-
-            if len(articles) >= total_results or len(articles) >= BATCH_SIZE:
-                break
+            if len(articles) >= min(data.get("totalResults", 0), BATCH_SIZE):
+                break  # Stop when enough articles are collected
 
             page += 1
         except requests.exceptions.RequestException as e:
@@ -67,34 +69,39 @@ def fetch_news(tag):
 
 def push_to_sqs(articles, tag):
     """Pushes fetched articles to AWS SQS queue."""
-    sqs = boto3.client("sqs",
-                       aws_access_key_id=AWS_ACCESS_KEY,
-                       aws_secret_access_key=AWS_SECRET_KEY,
-                       region_name=AWS_REGION)
+    try:
+        sqs = boto3.client("sqs",
+                           aws_access_key_id=AWS_ACCESS_KEY,
+                           aws_secret_access_key=AWS_SECRET_KEY,
+                           region_name=AWS_REGION)
 
-    new_articles = [article for article in articles if article["url"] not in processed_articles]
+        new_articles = [article for article in articles if article["url"] not in processed_articles]
+        if not new_articles:
+            print(f"⚠️ No new articles to push for tag '{tag}'")
+            return
 
-    for article in new_articles:
-        try:
+        # Send articles in batch to reduce API calls
+        for article in new_articles:
             sqs.send_message(
                 QueueUrl=SQS_QUEUE_URL,
                 MessageBody=json.dumps(article)
             )
             processed_articles.add(article["url"])
-        except Exception as e:
-            print(f"❌ Failed to push article to SQS: {e}")
 
-    print(f"✅ Pushed {len(new_articles)} new articles to SQS for tag '{tag}'.")
+        print(f"✅ Pushed {len(new_articles)} new articles to SQS for tag '{tag}'.")
+
+    except Exception as e:
+        print(f"❌ Failed to push articles to SQS: {e}")
 
 def main():
     """Main function to fetch news and push to SQS."""
     print("🚀 Starting news fetch job...")
-    
+
     for tag in TAGS:
         print(f"🔍 Fetching articles for: {tag}")
         articles = fetch_news(tag)
         push_to_sqs(articles, tag)
-        time.sleep(90)  # Prevent hitting API rate limits
+        time.sleep(60)
 
     print("🎉 News fetch job completed!")
 
