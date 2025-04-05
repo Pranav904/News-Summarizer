@@ -1,8 +1,26 @@
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
-import { DynamoDBClient, GetItemCommand, PutItemCommand } from '@aws-sdk/client-dynamodb';
 
-const dynamoDbClient = new DynamoDBClient({ region: 'us-east-1' });
-const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME;
+// Auth0 Management API configuration
+const domain = process.env.AUTH0_ISSUER_BASE_URL.replace('https://', '');
+const clientId = process.env.AUTH0_CLIENT_ID;
+const clientSecret = process.env.AUTH0_CLIENT_SECRET;
+
+// Helper function to get Auth0 Management API token
+async function getManagementApiToken() {
+  const response = await fetch(`https://${domain}/oauth/token`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      client_id: clientId,
+      client_secret: clientSecret,
+      audience: `https://${domain}/api/v2/`,
+      grant_type: 'client_credentials'
+    })
+  });
+
+  const data = await response.json();
+  return data.access_token;
+}
 
 // Handle the POST request to save preferences
 export const POST = withApiAuthRequired(async (req) => {
@@ -12,8 +30,8 @@ export const POST = withApiAuthRequired(async (req) => {
     return new Response(JSON.stringify({ error: 'User is not authenticated' }), { status: 401 });
   }
 
-  const userId = session.user.sub; // User's unique identifier
-  const { preferences } = await req.json(); // Expecting an array of preferences
+  const userId = session.user.sub;
+  const { preferences } = await req.json();
 
   console.log('Saving preferences for user:', userId, preferences);
 
@@ -22,16 +40,27 @@ export const POST = withApiAuthRequired(async (req) => {
   }
 
   try {
-    const params = {
-      TableName: TABLE_NAME,
-      Item: {
-        user_id: { S: userId }, // Partition key
-        preferences: { SS: preferences }, // String Set for preferences
+    // Get Auth0 Management API token
+    const token = await getManagementApiToken();
+    
+    // Update user metadata with preferences
+    const response = await fetch(`https://${domain}/api/v2/users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
-    };
+      body: JSON.stringify({
+        user_metadata: {
+          preferences: preferences
+        }
+      })
+    });
 
-    const command = new PutItemCommand(params);
-    await dynamoDbClient.send(command);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(JSON.stringify(error));
+    }
 
     return new Response(JSON.stringify({ message: 'Preferences saved' }), { status: 200 });
   } catch (error) {
@@ -53,22 +82,25 @@ export const GET = withApiAuthRequired(async (req) => {
   console.log('Fetching preferences for user:', userId);
 
   try {
-    const params = {
-      TableName: TABLE_NAME,
-      Key: { user_id: { S: userId } }, // Using user_id as the key to fetch preferences
-    };
+    // Get Auth0 Management API token
+    const token = await getManagementApiToken();
+    
+    // Fetch user data including metadata
+    const response = await fetch(`https://${domain}/api/v2/users/${userId}?fields=user_metadata`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
 
-    const command = new GetItemCommand(params);
-    const result = await dynamoDbClient.send(command); // Fetching the item from DynamoDB
-
-    // Check if the item exists
-    if (result.Item) {
-      const preferences = result.Item.preferences.SS || []; // Fetch preferences as an array
-      return new Response(JSON.stringify({ preferences }), { status: 200 });
-    } else {
-      // Return empty array if preferences do not exist
-      return new Response(JSON.stringify({ preferences: [] }), { status: 200 });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(JSON.stringify(error));
     }
+
+    const userData = await response.json();
+    const preferences = userData.user_metadata?.preferences || [];
+
+    return new Response(JSON.stringify({ preferences }), { status: 200 });
   } catch (error) {
     console.error('Error fetching preferences:', error);
     return new Response(JSON.stringify({ error: 'Could not fetch preferences' }), { status: 500 });
