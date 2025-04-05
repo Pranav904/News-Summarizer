@@ -5,7 +5,7 @@ import { DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { NextResponse } from 'next/server';
 
 // Initialize DynamoDB client
-const dynamoDbClient = new DynamoDBClient({ region: 'us-east-1' });
+const dynamoDbClient = new DynamoDBClient(process.env.AWS_REGION);
 
 export const GET = withApiAuthRequired(async function handler(req) {
    const session = await getSession(req);
@@ -37,7 +37,7 @@ export const GET = withApiAuthRequired(async function handler(req) {
       }, {});
 
       const articlesCommand = new ScanCommand({
-         TableName: 'ArticleSummaries',
+         TableName: process.env.DYNAMODB_TABLE,
          FilterExpression: filterExpression,
          ExpressionAttributeValues: expressionAttributeValues,
          Limit: 10,
