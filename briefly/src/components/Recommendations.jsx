@@ -32,7 +32,7 @@ function Recommendations(selectedTags) {
       );
       const data = await res.json();
 
-      setArticles((prevArticles) => [...prevArticles, ...data.articles]);
+      setArticles((prevArticles) => [...prevArticles, ...(data.articles || [])]);
       setLastKey(data.lastKey);
       setLoading(false);
     },
