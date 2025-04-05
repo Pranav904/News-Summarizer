@@ -1,47 +1,70 @@
 import { useCallback, useEffect, useState } from "react";
-import { IconCaretUpFilled, IconCaretDownFilled } from "@tabler/icons-react";
+import { ChevronUp, ChevronDown, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import Tag from "./Tag";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function formatDate(timestamp) {
-  const date = new Date(parseInt(timestamp));
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-
-  return `${hours}:${minutes} | ${day}/${month}/${year}`;
+  try {
+    const date = new Date(parseInt(timestamp));
+    if (isNaN(date.getTime())) {
+      return "Invalid date";
+    }
+    const options = { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric' 
+    };
+    return new Intl.DateTimeFormat('en-GB', options).format(date).replace(',', ' |');
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "Invalid date";
+  }
 }
 
-function Recommendations(selectedTags) {
+function Recommendations({ selectedTags }) {
   const [articles, setArticles] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastKey, setLastKey] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [nextImageLoading, setNextImageLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchArticles = useCallback(
     async (key) => {
-      setLoading(true);
-      const res = await fetch(
-        `/api/recommendation?lastKey=${key ? JSON.stringify(key) : ""}` +
-          `&tags=${
-            selectedTags ? JSON.stringify(selectedTags.selectedTags) : ""
-          }`
-      );
-      const data = await res.json();
-
-      setArticles((prevArticles) => [...prevArticles, ...(data.articles || [])]);
-      setLastKey(data.lastKey);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `/api/recommendation?lastKey=${key ? JSON.stringify(key) : ""}` +
+          `&tags=${selectedTags ? JSON.stringify(selectedTags) : ""}`
+        );
+        
+        if (!res.ok) {
+          throw new Error(`Failed to fetch: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        setArticles((prevArticles) => [...prevArticles, ...(data.articles || [])]);
+        setLastKey(data.lastKey);
+      } catch (err) {
+        setError(err.message);
+        console.error("Error fetching articles:", err);
+      } finally {
+        setLoading(false);
+      }
     },
-    [setLastKey, setArticles, setLoading, selectedTags]
+    [selectedTags]
   );
 
   useEffect(() => {
+    setArticles([]);
+    setCurrentIndex(0);
+    setLastKey(null);
     fetchArticles();
-  }, [fetchArticles]);
+  }, [fetchArticles, selectedTags]);
 
   const nextArticle = () => {
     if (currentIndex < articles.length - 1) {
@@ -57,83 +80,161 @@ function Recommendations(selectedTags) {
     }
   };
 
-  const currentArticle = articles[currentIndex];
-
+  // Prefetch next image
   useEffect(() => {
     const nextIndex = currentIndex + 1;
     if (articles[nextIndex] && articles[nextIndex].image_url) {
       const img = new Image();
       img.src = articles[nextIndex].image_url;
-      img.onload = () => setNextImageLoading(false);
-      setNextImageLoading(true);
     }
   }, [currentIndex, articles]);
 
-  return (
-    <div className="lg:h-full container p-6 flex flex-col sm:flex-row items-center">
-      {loading && articles.length === 0 ? (
-        <div className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-      ) : currentArticle ? (
-        <div className="lg:h-full flex flex-col lg:flex-row items-center p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg ">
-          {/* <Image
-            src={currentArticle.image_url}
-            alt={currentArticle.title}
-            height={200}
-            width={300}
-            className="max-w-80 max-h-80 object-fill rounded-lg mr-8"
-          /> */}
-          <div className="w-full lg:h-full lg:w-fit">
-            <img
-              src={currentArticle.image_url}
-              alt={currentArticle.title}
-              className="w-full lg:max-w-80 lg:h-full object-cover rounded-lg lg:mr-8"
-            ></img>
-          </div>
-          <div className="flex-1 md:pr-2">
-            <h2 className="mt-4 lg:mt-0 text-justify text-xl md:text-2xl lg:text-5xl mb-6 font-semibold dark:text-gray-100">
-              <Link href={currentArticle.url}> {currentArticle.title} </Link>
-            </h2>
-            <div className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">
-              Author: {currentArticle.author}
-            </div>
-            <div className="tags-container flex flex-wrap mt-2">
-              {currentArticle.tags &&
-                currentArticle.tags.map((tag, index) => (
-                  <Tag key={index} tag={tag} />
-                ))}
-            </div>
+  const currentArticle = articles[currentIndex];
 
-            <p className="text-justify text-base xl:text-lg text-gray-700 dark:text-gray-300 mt-2">
-              {currentArticle.content}
-            </p>
-            <div className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
-              Published: {formatDate(currentArticle.published_date)}
+  if (error) {
+    return (
+      <Card className="w-full h-full flex items-center justify-center">
+        <CardContent className="pt-6 text-center">
+          <p className="text-destructive">Error loading articles: {error}</p>
+          <Button onClick={() => fetchArticles()} className="mt-4">Retry</Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="h-full container p-4 grid grid-cols-1 md:grid-cols-[1fr,auto] gap-4 lg:max-w-[90%] lg:mx-auto">
+      {console.log("Articles:", currentArticle)}
+      {loading && articles.length === 0 ? (
+        <ArticleSkeleton />
+      ) : currentArticle ? (
+        <Card className="h-full min-h-[70vh]">
+          <div className="grid grid-cols-1 lg:grid-cols-[40%,60%] h-full">
+            <div className="relative h-[200px] sm:h-full bg-muted">
+              {currentArticle.image_url ? (
+                <img
+                  src={currentArticle.image_url}
+                  alt={currentArticle.title}
+                  className="object-cover rounded-t-lg md:rounded-t-none md:rounded-l-lg h-full w-full absolute inset-0"
+                />
+              ) : (
+                <div className="w-full h-full bg-muted flex items-center justify-center">
+                  <p className="text-muted-foreground">No image available</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex flex-col p-6 overflow-auto">
+              <CardHeader className="p-0 pb-4">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {currentArticle.tags?.map((tag, index) => (
+                    <Badge key={index} variant="outline" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+                <CardTitle className="text-2xl md:text-4xl lg:text-5xl pb-8 font-bold tracking-tight">
+                  {currentArticle.title}
+                </CardTitle>
+                <div className="text-sm text-muted-foreground mt-2 flex items-center">
+                  <span>By {currentArticle.author}</span>
+                  <span className="mx-2">•</span>
+                  <span>{formatDate(currentArticle.published_date)}</span>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="p-0 flex-grow">
+                <p className="text-muted-foreground leading-relaxed w-full text-justify text-sm md:text-base lg:text-lg">
+                  {currentArticle.content}
+                </p>
+              </CardContent>
+              
+              <CardFooter className="p-0 pt-4 flex justify-end">
+                <Link 
+                  href={currentArticle.url} 
+                  target="_blank"
+                  rel="noopener noreferrer" 
+                  className="inline-flex items-center"
+                >
+                  <Button variant="outline" className="gap-2">
+                    <span>Read Full Article</span>
+                    <ExternalLink size={16} />
+                  </Button>
+                </Link>
+              </CardFooter>
             </div>
           </div>
-        </div>
+        </Card>
       ) : (
-        <div className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse flex items-center justify-center">
-          <p>No articles available! Ping Me !!</p>
-        </div>
+        <Card className="h-full min-h-[70vh] flex items-center justify-center">
+          <CardContent className="pt-6 text-center">
+            <p className="text-muted-foreground">No articles available for the selected tags</p>
+          </CardContent>
+        </Card>
       )}
 
-      <div className="flex flex-row sm:flex-col ml-4 mt-4 sm:mt-0">
-        <button
+      <div className="flex md:flex-col items-center justify-center gap-2">
+        <Button
+          size="icon"
+          variant="outline"
           onClick={previousArticle}
           disabled={currentIndex === 0}
-          className="-rotate-90 sm:rotate-0 sm:mb-2 px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded-full disabled:opacity-50"
+          aria-label="Previous article"
+          className="rounded-full h-12 w-12"
         >
-          <IconCaretUpFilled />
-        </button>
-        <button
+          <ChevronUp className="h-6 w-6" />
+        </Button>
+        
+        <div className="text-center bg-muted rounded-md px-3 py-1">
+          <span className="text-sm font-medium">
+            {articles.length > 0 ? `${currentIndex + 1}/${articles.length}` : "0/0"}
+          </span>
+        </div>
+        
+        <Button
+          size="icon"
+          variant="default"
           onClick={nextArticle}
-          disabled={loading && currentIndex === articles.length - 1}
-          className="-rotate-90 sm:rotate-0 sm:mt-2 px-4 py-2 bg-blue-500 dark:bg-blue-700 rounded-full disabled:opacity-50"
+          disabled={loading || (currentIndex === articles.length - 1 && !lastKey)}
+          aria-label="Next article"
+          className="rounded-full h-12 w-12"
         >
-          <IconCaretDownFilled />
-        </button>
+          <ChevronDown className="h-6 w-6" />
+        </Button>
       </div>
     </div>
+  );
+}
+
+function ArticleSkeleton() {
+  return (
+    <Card className="h-full min-h-[70vh] overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-[40%,60%] h-full">
+        <Skeleton className="h-[200px] lg:h-full rounded-tl-lg rounded-tr-lg lg:rounded-tr-none lg:rounded-bl-lg" />
+        <div className="flex flex-col p-6">
+          <div className="pb-4">
+            <div className="flex gap-2 mb-3">
+              {[1, 2, 3].map(i => (
+                <Skeleton key={i} className="h-5 w-16 rounded-full" />
+              ))}
+            </div>
+            <Skeleton className="h-10 w-4/5 mb-2" />
+            <Skeleton className="h-10 w-3/5 mb-4" />
+            <Skeleton className="h-4 w-48 mt-2" />
+          </div>
+          <div className="flex-grow space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-4/5" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+          <div className="pt-4 flex justify-end">
+            <Skeleton className="h-10 w-40" />
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 }
 
