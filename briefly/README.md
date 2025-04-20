@@ -1,4 +1,33 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# News Summarizer
+
+## Purpose
+
+The purpose of this project is to provide a platform for summarizing news articles. It fetches news articles from various sources, summarizes them, and provides relevant tags for easy categorization.
+
+## Main Features
+
+- Fetches news articles from multiple sources.
+- Summarizes articles using Google Generative AI.
+- Categorizes articles with relevant tags.
+- Stores summarized articles in DynamoDB.
+- Provides a user interface for viewing summarized articles.
+
+## Technologies Used
+
+- Next.js for the frontend.
+- Google Generative AI for summarizing articles.
+- AWS DynamoDB for storing summarized articles.
+- AWS SQS for message queuing.
+- NewsAPI for fetching news articles.
+
+## Contributing
+
+We welcome contributions from the community. To contribute, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Make your changes.
+4. Submit a pull request with a detailed description of your changes.
 
 ## Getting Started
 
